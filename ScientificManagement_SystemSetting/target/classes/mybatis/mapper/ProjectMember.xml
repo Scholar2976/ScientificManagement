@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.attachment.ProjectMemberMapper">
+
+	<select id="getMemberList" resultType="com.ccb.sm.entities.ProjectMember"
+		parameterType="java.util.Map">
+		select * from project_member where
+		<where>
+			<trim suffixOverrides="and">
+				<if test = "reference_id !=null">reference_id=#{reference_id} and </if>
+				<if test = "type != null">type = #{type} and </if>
+			</trim>
+		</where>
+		reference_id=#{reference_id} and type = #{type}
+	</select>
+
+	<!-- <select id="getResultListTotal" resultType="Integer"> select count(1) 
+		from project_result where year=#{year} and level=#{level} and type=#{type} 
+		and domain=#{domain} </select> -->
+
+	<!-- 根据result_id插入数据 -->
+	<insert id="BatchInsert" parameterType="java.util.List">
+		<foreach collection="list" item="member" index="index"
+			open="" close="" separator=";">
+			insert into project_member
+			<trim suffixOverrides="," suffix=")" prefix="(">
+
+				<if test="member.id != null">id, </if>
+
+				<if test="member.reference_id != null">reference_id, </if>
+
+				<if test="member.user_id != null">user_id, </if>
+
+				<if test="member.username != null">`username`, </if>
+
+				<if test="member.user_property != null">user_property, </if>
+
+				<if test="member.company != null">company, </if>
+
+				<if test="member.office != null">office, </if>
+
+				<if test="member.office_name != null">office_name, </if>
+
+				<if test="member.rank != null">rank, </if>
+
+				<if test="member.duty != null">duty, </if>
+
+				<if test="member.type != null">type, </if>
+
+				<if test="member.ranking != null">ranking, </if>
+
+				<if test="member.created_time != null">created_time, </if>
+
+				<if test="member.modified_time != null">modified_time, </if>
+
+				<if test="member.deleted != null">deleted, </if>
+
+				<if test="member.deleted_time != null">deleted_time, </if>
+
+			</trim>
+			<trim suffixOverrides="," suffix=")" prefix="values (">
+
+				<if test="member.id != null">#{member.id,jdbcType=INTEGER}, </if>
+
+				<if test="member.reference_id != null">#{member.reference_id,jdbcType=VARCHAR}, </if>
+
+				<if test="member.user_id != null">#{user_od,jdbcType=VARCHAR}, </if>
+
+				<if test="username != null">#{member.username,jdbcType=VARCHAR}, </if>
+
+				<if test="member.user_property != null">#{user_property,jdbcType=VARCHAR}, </if>
+
+				<if test="member.company != null">#{member.company,jdbcType=VARCHAR}, </if>
+
+				<if test="member.office != null">#{member.office,jdbcType=VARCHAR}, </if>
+
+				<if test="member.office_name != null">#{member.office_name,jdbcType=VARCHAR}, </if>
+
+				<if test="member.rank != null">#{member.rank,jdbcType=VARCHAR}, </if>
+
+				<if test="member.duty != null">#{member.duty,jdbcType=VARCHAR}, </if>
+
+				<if test="member.type != null">#{member.type,jdbcType=VARCHAR}, </if>
+
+				<if test="member.ranking != null">#{member.ranking,jdbcType=CHAR}, </if>
+
+				<if test="member.created_time != null">#{member.created_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="member.modified_time != null">#{member.modified_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="member.deleted != null">#{member.deleted,jdbcType=BIT}, </if>
+
+				<if test="member.deleted_time != null">#{member.deleted_time,jdbcType=TIMESTAMP}, </if>
+			</trim>
+		</foreach>
+	</insert>
+	<!-- 根据result_id删除数据 -->
+	<delete id="deleteByReferenceId" parameterType="java.lang.String">
+		delete from
+		project_member where reference_id = #{reference_id}
+	</delete>
+	
+	<select id = "QueryUserName" resultType="java.lang.String">
+		select username from project_member where  reference_id=#{reference_id} and type = #{type} 
+	</select>
+
+</mapper>

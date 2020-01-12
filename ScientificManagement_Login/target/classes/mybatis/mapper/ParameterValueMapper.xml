@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.parameter.ParameterValueDao">
+	<select id="getTree" resultType="com.ccb.sm.entities.ParameterValue"
+		parameterType="java.util.Map">
+		select * from parameter_value where
+		<if test="parameter != null">`parameter` = #{parameter} and </if>
+		<if test="deleted != null">`deleted` = #{deleted} and  </if>
+		<if test="parent != null">`parent` = #{parent} </if>
+		order by `order`
+	</select>
+</mapper>
+
+
+
+
+
+

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hospital301.scientificmanagement.dao.project.ProjectMapper">
+
+	<resultMap id="project" type="com.ccb.sm.entities.Project">
+	</resultMap>
+	<resultMap id="count" type="java.lang.Integer">
+		<result column="count" />
+	</resultMap>
+
+	<select id="getPageListAndTotal" resultMap="project,count"
+		parameterType="java.util.Map">
+		SELECT SQL_CALC_FOUND_ROWS * FROM project
+		<where>
+			<trim suffixOverrides="and">
+				<if test="name!=null">name like CONCAT('%',#{name},'%') and </if>
+				<if test="fund1 != null and fund2 == null">
+					approved_fund <![CDATA[ >= ]]>
+					#{fund1} and
+				</if>
+				<if test="fund2 != null and fund1 == null">
+					approved_fund <![CDATA[ <= ]]>
+					#{fund2} and
+				</if>
+				<if test="fund1 != null and fund2 != null"> approved_fund between #{fund1} and #{fund2} and </if>
+			</trim>
+		</where>
+		limit #{pageStart},#{pageEnd};
+		SELECT FOUND_ROWS() as count;
+	</select>
+	
+	<select id="getPageListAndTotalByUser" resultMap="project,count"
+		parameterType="java.util.Map">
+		SELECT SQL_CALC_FOUND_ROWS p.* FROM project p ,project_member m 
+		<where>
+			<trim suffixOverrides="and">
+				<if test="name!=null">name like CONCAT('%',#{name},'%') and </if>
+				<if test="fund1 != null and fund2 == null">
+					approved_fund <![CDATA[ >= ]]>
+					#{fund1} and
+				</if>
+				<if test="fund2 != null and fund1 == null">
+					approved_fund <![CDATA[ <= ]]>
+					#{fund2} and
+				</if>
+				<if test="fund1 != null and fund2 != null"> approved_fund between #{fund1} and #{fund2} and </if>
+				<if test="organization_id !=null"> m.organization_id=#{organization_id} and </if>
+				m.type='project' and 
+				m.reference_id=p.id 
+			</trim>
+		</where>
+		limit #{pageStart},#{pageEnd};
+		SELECT FOUND_ROWS() as count;
+	</select>
+	
+	<select id="getPageListAndTotalByOrg" resultMap="project,count"
+		parameterType="java.util.Map">
+		SELECT SQL_CALC_FOUND_ROWS p.* FROM project p ,project_member m 
+		<where>
+			<trim suffixOverrides="and">
+				<if test="name!=null">name like CONCAT('%',#{name},'%') and </if>
+				<if test="fund1 != null and fund2 == null">
+					approved_fund <![CDATA[ >= ]]>
+					#{fund1} and
+				</if>
+				<if test="fund2 != null and fund1 == null">
+					approved_fund <![CDATA[ <= ]]>
+					#{fund2} and
+				</if>
+				<if test="fund1 != null and fund2 != null"> approved_fund between #{fund1} and #{fund2} and </if>
+				<if test="username !=null"> m.username=#{username} and </if>
+				m.type='project' and 
+				m.reference_id=p.id 
+			</trim>
+		</where>
+		limit #{pageStart},#{pageEnd};
+		SELECT FOUND_ROWS() as count;
+	</select>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.report.ReportMapper">
+	<!-- 获取我的成果中的奖励统计结果 -->
+	<select id="getReportReward" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select p.label as name, count(1) as value from
+		project_member m, project_reward b
+		left join parameter_value p on
+		b.level=p.value and
+		p.parameter='rewardLevel'
+		where m.username=
+		#{username}
+		and m.reference_id=b.id and m.type='reward' group by
+		b.level order by
+		p.order;
+	</select>
+
+	<!-- 获取我的成果中的论文统计结果 -->
+	<select id="getReportPaper" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select p.label as name, count(1) as value from
+		project_member m, project_paper b
+		left join parameter_value p on
+		b.type=p.value and p.parameter='paperType'
+		where m.username=
+		#{username}
+		and m.reference_id=b.id and m.type='paper' group by b.type
+		order by
+		p.order
+	</select>
+
+	<!-- 获取我的成果中的软著的统计结果 -->
+	<select id="getReportSoftWare" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select p.label as name, count(1) as value from
+		project_member m, project_software b
+		left join parameter_value p on
+		b.development_mode=p.value and
+		p.parameter='softwareDevelopmentMode'
+		where m.username= #{username}
+		and m.reference_id=b.id and
+		m.type='software'
+		group by b.development_mode order by p.order
+	</select>
+
+
+	<!-- 获取我的成果中的著作的统计结果 -->
+	<select id="getReportWork" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select p.label as name, count(1) as value from
+		project_member m, project_work b
+		left join parameter_value p on
+		b.category=p.value and
+		p.parameter='workDomainType'
+		where
+		m.username=#{username}
+		and m.reference_id=b.id and m.type='work' group
+		by b.category order by
+		p.order
+	</select>
+
+	<!-- 获取我的成果中patent统计结果 -->
+	<select id="getReportPatent" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select p.label as name, count(1) as value from
+		project_member m, project_patent b
+		left join parameter_value p on
+		b.type=p.value and p.parameter='patentType'
+		where m.username=
+		#{username}
+		and m.reference_id=b.id and m.type='patent' group by b.type
+		order by
+		p.order
+	</select>
+
+	<!-- 获取我的项目的统计结果 -->
+	<select id="getReportProject" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select p.level, count(1) as count from project_member m,
+		project p where m.username=#{username}
+		and m.reference_id=p.id and
+		m.type='project'
+		group by p.level
+	</select>
+
+	<!-- 获取实验室的统计结果 -->
+	<select id="getReportLab" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select a.academy_level, count(1) as count from
+		project_academy a, project_academy_post p
+		where a.id = p.academy_id and
+		p.username=#{username}
+		group by a.academy_level
+	</select>
+
+
+	<!-- 获取学术任职的统计结果 -->
+	<select id="getReportAcademy" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select a.academy_level, count(1) as count from
+		project_academy a, project_academy_post p
+		where a.id = p.academy_id and
+		p.username=#{username}
+		group by a.academy_level
+	</select>
+
+	<!-- 获取学术活动的统计结果 -->
+	<select id="getReportExchange" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select a.academy_level, count(1) as count from project_academy a,
+		project_academy_post p
+		where a.id = p.academy_id and p.username= #{username}
+		group by a.academy_level
+	</select>
+
+	<!-- 个人主页上的统计信息  -->
+	<select id="getUserReport" resultType="java.util.List"
+		parameterType="java.util.Map">
+		select m.username, m.type, count(1) as count 
+		from project_member m 
+		where m.username=#{username}
+		group by type
+	</select>
+
+
+</mapper>
