@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.Work.ProjectWorkMapper">
+
+	<select id="getWorkList" resultType="com.ccb.sm.entities.ProjectWork"
+		parameterType="java.util.Map">
+		select * from project_work where
+		chief_editor=#{chief_editor} and title like CONCAT{'%',#{title},'%'}
+		limit #{start},#{end}
+	</select>
+
+	<select id="getWorkListTotal" resultType="Integer"
+		parameterType="java.util.Map">
+		select count(1) from project_work
+		<where>
+			<trim suffixOverrides="and">
+				<if test="chief_editor != null">chief_editor=#{chief_edito} and  </if>
+				<if test="title != null">title like CONCAT{'%',#{title},'%'} and  </if>
+				<if test="work_id != null "> work_id = #{work_id}</if>
+				<if test="id != null"> id =#{id}</if>
+			</trim>
+		</where>
+		<!-- where chief_editor=#{chief_editor} and title like CONCAT{'%',#{title},'%'} -->
+	</select>
+
+	<select id="QueryWorkByWorkId" resultType="com.ccb.sm.entities.ProjectWork">
+		select * from
+		project_work where work_id = #{work_id}
+	</select>
+
+	<insert id="BatchInsert" parameterType="java.util.List">
+		insert into project_work
+		<trim suffixOverrides="," suffix=")" prefix="(">
+
+			<if test="id != null">id, </if>
+
+			<if test="isbn != null">isbn, </if>
+
+			<if test="title != null">title, </if>
+
+			<if test="category != null">category, </if>
+
+			<if test="press != null">press, </if>
+
+			<if test="publish_date != null">publish_date, </if>
+
+			<if test="chief_editor != null">chief_editor, </if>
+
+			<if test="chief_editor_name != null">chief_editor_name, </if>
+
+			<if test="wordnum != null">wordnum, </if>
+
+			<if test="is_translation != null">is_translation, </if>
+
+			<if test="publish_range != null">publish_range, </if>
+
+			<if test="domain_catetory != null">domain_catetory, </if>
+
+			<if test="created_time != null">created_time, </if>
+
+			<if test="modified_time != null">modified_time, </if>
+
+			<if test="deleted != null">deleted, </if>
+
+			<if test="deleted_time != null">deleted_time, </if>
+
+		</trim>
+		<trim suffixOverrides="," suffix=")" prefix="values (">
+
+			<if test="id != null">#{id}, </if>
+
+			<if test="isbn != null">#{isbn}, </if>
+
+			<if test="title != null">#{title}, </if>
+
+			<if test="category != null">#{category}, </if>
+
+			<if test="press != null">#{press}, </if>
+
+			<if test="publish_date != null">#{publish_date}, </if>
+
+			<if test="chief_editor != null">#{chief_editor}, </if>
+
+			<if test="chief_editor_name != null">#{chief_editor_name}, </if>
+
+			<if test="wordnum != null">wordnum, </if>
+
+			<if test="is_translation != null">#{is_translation}, </if>
+
+			<if test="publish_range != null">#{publish_range}, </if>
+
+			<if test="domain_catetory != null">#{domain_catetory}, </if>
+
+			<if test="created_time != null">#{created_time}, </if>
+
+			<if test="modified_time != null">#{modified_time}, </if>
+
+			<if test="deleted != null">#{deleted}, </if>
+
+			<if test="deleted_time != null">deleted_time, </if>
+		</trim>
+	</insert>
+
+
+	<insert id="Insert" parameterType="com.ccb.sm.entities.ProjectWork">
+		insert into project_work
+		<trim suffixOverrides="," suffix=")" prefix="(">
+
+			<if test="id != null">id, </if>
+
+			<if test="isbn != null">isbn, </if>
+
+			<if test="title != null">title, </if>
+
+			<if test="category != null">category, </if>
+
+			<if test="press != null">press, </if>
+
+			<if test="publish_date != null">publish_date, </if>
+
+			<if test="chief_editor != null">chief_editor, </if>
+
+			<if test="chief_editor_name != null">chief_editor_name, </if>
+
+			<if test="wordnum != null">wordnum, </if>
+
+			<if test="is_translation != null">is_translation, </if>
+
+			<if test="publish_range != null">publish_range, </if>
+
+			<if test="domain_catetory != null">domain_catetory, </if>
+
+			<if test="created_time != null">created_time, </if>
+
+			<if test="modified_time != null">modified_time, </if>
+
+			<if test="deleted != null">deleted, </if>
+
+			<if test="deleted_time != null">deleted_time, </if>
+
+		</trim>
+		<trim suffixOverrides="," suffix=")" prefix="values (">
+
+			<if test="id != null">#{id}, </if>
+
+			<if test="isbn != null">#{isbn}, </if>
+
+			<if test="title != null">#{title}, </if>
+
+			<if test="category != null">#{category}, </if>
+
+			<if test="press != null">#{press}, </if>
+
+			<if test="publish_date != null">#{publish_date}, </if>
+
+			<if test="chief_editor != null">#{chief_editor}, </if>
+
+			<if test="chief_editor_name != null">#{chief_editor_name}, </if>
+
+			<if test="wordnum != null">wordnum, </if>
+
+			<if test="is_translation != null">#{is_translation}, </if>
+
+			<if test="publish_range != null">#{publish_range}, </if>
+
+			<if test="domain_catetory != null">#{domain_catetory}, </if>
+
+			<if test="created_time != null">#{created_time}, </if>
+
+			<if test="modified_time != null">#{modified_time}, </if>
+
+			<if test="deleted != null">#{deleted}, </if>
+
+			<if test="deleted_time != null">deleted_time, </if>
+		</trim>
+	</insert>
+
+
+
+
+
+	<update id="BatchupdateByWorkId" parameterType="java.util.List">
+		update project_work
+		<set>
+			<if test="isbn != null">`isbn` = #{isbn,jdbcType=VARCHAR}, </if>
+
+			<if test="title != null">title = #{title,jdbcType=VARCHAR}, </if>
+
+			<if test="category != null">category = #{category,jdbcType=VARCHAR}, </if>
+
+			<if test="press != null">press = #{press,jdbcType=VARCHAR}, </if>
+
+			<if test="publish_date != null">publish_date = #{publish_date,jdbcType=DATE}, </if>
+
+			<if test="chief_editor != null">chief_editor = #{chief_editor,jdbcType=VARCHAR}, </if>
+
+			<if test="chief_editor_name != null">chief_editor_name =
+				#{chief_editor_name,jdbcType=VARCHAR},
+			</if>
+
+			<if test="wordnum != null">`wordnum` = #{wordnum,jdbcType=INTEGER}, </if>
+
+			<if test="is_translation != null">is_translation = #{is_translation,jdbcType=BIT}, </if>
+
+			<if test="publish_range != null">publish_range = #{publish_range,jdbcType=VARCHAR}, </if>
+
+			<if test="domain_catetory != null">domain_catetory = #{domain_catetory,jdbcType=VARCHAR},
+			</if>
+
+			<if test="created_time != null">created_time = #{created_time,jdbcType=TIMESTAMP}, </if>
+
+			<if test="modified_time != null">modified_time = #{modified_time,jdbcType=TIMESTAMP}, </if>
+
+			<if test="deleted != null">deleted = #{deleted,jdbcType=BIT}, </if>
+
+			<if test="deleted_time != null">deleted_time = #{deleted_time,jdbcType=TIMESTAMP}, </if>
+		</set>
+		where work_id = #{work_id,jdbcType=INTEGER}
+	</update>
+
+
+	<update id="UpdateByWorkId" parameterType="com.ccb.sm.entities.ProjectWork">
+		update project_work
+		<set>
+
+			<if test="isbn != null">`isbn` = #{isbn,jdbcType=VARCHAR}, </if>
+
+			<if test="title != null">title = #{title,jdbcType=VARCHAR}, </if>
+
+			<if test="category != null">category = #{category,jdbcType=VARCHAR}, </if>
+
+			<if test="press != null">press = #{press,jdbcType=VARCHAR}, </if>
+
+			<if test="publish_date != null">publish_date = #{publish_date,jdbcType=DATE}, </if>
+
+			<if test="chief_editor != null">chief_editor = #{chief_editor,jdbcType=VARCHAR}, </if>
+
+			<if test="chief_editor_name != null">chief_editor_name =#{chief_editor_name,jdbcType=VARCHAR},</if>
+
+			<if test="wordnum != null">`wordnum` = #{wordnum,jdbcType=INTEGER}, </if>
+
+			<if test="is_translation != null">is_translation = #{is_translation,jdbcType=BIT}, </if>
+
+			<if test="publish_range != null">publish_range = #{publish_range,jdbcType=VARCHAR}, </if>
+
+			<if test="domain_catetory != null">domain_catetory = #{domain_catetory,jdbcType=VARCHAR},
+			</if>
+
+			<if test="created_time != null">created_time = #{created_time,jdbcType=TIMESTAMP}, </if>
+
+			<if test="modified_time != null">modified_time = #{modified_time,jdbcType=TIMESTAMP}, </if>
+
+			<if test="deleted != null">deleted = #{deleted,jdbcType=BIT}, </if>
+
+			<if test="deleted_time != null">deleted_time = #{deleted_time,jdbcType=TIMESTAMP}, </if>
+		</set>
+		where work_id = #{work_id,jdbcType=INTEGER}
+	</update>
+
+	<delete id="deleteByWorkId" parameterType="java.lang.Integer">delete from
+		project_workwhere work_id = #{work_id,jdbcType=INTEGER} </delete>
+
+</mapper>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.user.UserDao">
+	<select id="QueryByLike" resultType="com.ccb.sm.entities.User">
+		select * from user where `username` like CONCAT('%',#{username},'%') 
+		or nickname like CONCAT('%',#{username},'%') 
+	</select>
+</mapper>

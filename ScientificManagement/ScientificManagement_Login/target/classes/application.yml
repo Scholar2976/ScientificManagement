@@ -1,0 +1,46 @@
+server:
+  port: 8000
+  
+mybatis:
+  config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
+  type-aliases-package: com.ccb.sm.entities    # 所有Entity别名类所在包
+  mapper-locations:
+  - classpath:mybatis/mapper/**/*.xml                       # mapper映射文件
+
+spring:
+   application:
+    name: microservicecloud-dept
+   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+#    driver-class-name: org.gjt.mm.mysql.Driver              # mysql驱动包
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://122.51.213.188:3306/webject?allowMultiQueries=true&useAffectedRows=true&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&useUnicode=true&characterEncoding=utf8
+    username: webject
+    password: Wbj@#123
+#    url: jdbc:mysql://192.168.234.131:3306/test?allowMultiQueries=true&autoReconnect=true&useUnicode=true&characterEncoding=utf8
+#    username: root
+#    password: 123456
+    initialSize: 2
+    maxActive: 300
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testOnBorrow: false
+    testOnReturn: false
+    testWhileIdle: true
+    filters: stat
+   redis:
+        host: 192.168.234.132
+ #       host: 127.0.0.1
+        port: 6379
+        password:
+        jedis: 
+             pool: 
+                 max-active: 8
+                 max-wait: -1
+                 max-idle: 500
+                 min-idle: 0
+        lettuce:
+                shutdown-timeout: 0
+

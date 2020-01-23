@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.report.ReportMapper">
+	<!-- 获取我的成果中的奖励统计结果 -->
+	<resultMap id="project" type="java.util.Map">
+		<result column="c.label" property="name"></result>
+		<result column="count(1)" property="value"></result>
+	</resultMap>
+	<select id="getReportReward" resultMap="project"
+		parameterType="java.util.Map">
+		select c.label as name, count(1) as value from
+		(select distinct
+		m.reference_id, p.label, b.level, p.order
+		from project_member m,
+		project_reward b
+		left join parameter_value p on b.level=p.value and
+		p.parameter='rewardLevel'
+		where 1=1
+		<if test="username != null "> and m.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=b.id and m.type='reward' and
+		m.deleted=0) c
+		group by
+		c.level order by c.order
+	</select>
+
+	<!-- 获取我的成果中的论文统计结果 -->
+	<select id="getReportPaper" resultMap="project"
+		parameterType="java.util.Map">
+		select c.label as name, count(1) as value from
+		(select distinct
+		m.reference_id, p.label, b.type, p.order
+		from project_member m,
+		project_paper b
+		left join parameter_value p on b.type=p.value and
+		p.parameter='paperType'
+		where 1=1
+		<if test=" username != null "> and m.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=b.id and m.type='paper'
+		and m.deleted=0) c
+		group by
+		c.type order by c.order
+	</select>
+
+	<!-- 获取我的成果中的软著的统计结果 -->
+	<select id="getReportSoftWare" resultMap="project"
+		parameterType="java.util.Map">
+		select c.label as name, count(1) as value from
+		(select distinct
+		m.reference_id, p.label, b.development_mode, p.order
+		from
+		project_member m, project_software b
+		left join parameter_value p on
+		b.development_mode=p.value and
+		p.parameter='softwareDevelopmentType'
+		where
+		1=1
+		<if test="username != null "> and m.username= #{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=b.id and m.type='software'
+		and m.deleted=0) c
+		group
+		by c.development_mode order by c.order
+	</select>
+
+
+	<!-- 获取我的成果中的著作的统计结果 -->
+	<select id="getReportWork" resultMap="project"
+		parameterType="java.util.Map">
+		select c.label as name, count(1) as value from
+		(select distinct
+		m.reference_id, p.label, b.category, p.order
+		from project_member m,
+		project_work b
+		left join parameter_value p on b.category=p.value and
+		p.parameter='workCategoryType'
+		where 1=1
+		<if test=" username != null "> and m.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=b.id and m.type='work' and
+		m.deleted=0) c
+		group by
+		c.category order by c.order
+	</select>
+
+	<!-- 获取我的成果中patent统计结果 -->
+	<select id="getReportPatent" resultMap="project"
+		parameterType="java.util.Map">
+		select c.label as name, count(1) as value from
+		(select distinct
+		m.reference_id, p.label, b.type, p.order
+		from project_member m,
+		project_patent b
+		left join parameter_value p on b.type=p.value and
+		p.parameter='patentType'
+		where 1=1
+		<if test="username != null "> and m.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=b.id and m.type='patent'
+		and m.deleted=0) c
+		group by
+		c.type order by c.order
+	</select>
+
+	<!-- 获取我的项目的统计结果 -->
+	<resultMap id="projectMap" type="java.util.Map">
+		<result column="c.level" property="level"></result>
+		<result column="count(1)" property="count"></result>
+	</resultMap>
+	<select id="getReportProject" resultMap="projectMap"
+		parameterType="java.util.Map">
+		select c.level, count(1) as count from
+		(select distinct m.reference_id,
+		p.level
+		from project_member m, project p
+		where 1=1
+		<if test="username!=null"> and m.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=p.id and m.type='project' and
+		m.deleted=0) c
+		group by
+		c.level
+	</select>
+
+	<!-- 获取实验室的统计结果 -->
+	<resultMap id="labReport" type="java.util.Map">
+		<result column="c.category" property="category"></result>
+		<result column="count(1)" property="count"></result>
+	</resultMap>
+	<select id="getReportLab" resultMap="labReport"
+		parameterType="java.util.Map">
+		select c.category, count(1) as count from
+		(select distinct
+		m.reference_id, p.category
+		from project_member m, project_lab p
+		where
+		1=1
+		<if test="username != null"> m.username=#{username} </if>
+		and m.reference_id=p.id and m.type='lab' and
+		m.deleted=0) c
+		group by
+		c.category
+	</select>
+
+
+	<!-- 获取学术任职的统计结果 -->
+	<resultMap id="academyReport" type="java.util.Map">
+		<result column="c.academy_level" property="academy_level"></result>
+		<result column="count(1)" property="count"></result>
+	</resultMap>
+	<select id="getReportAcademy" resultMap="academyReport"
+		parameterType="java.util.Map">
+		select c.academy_level, count(1) as count from
+		(select distinct
+		m.reference_id, a.academy_level
+		from project_academy a,
+		project_academy_post p, project_member m
+		where 1=1
+		<if test="username != null"> and p.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=p.id and m.type='academy'
+		and a.id = p.academy_id
+		and m.deleted=0) c
+		group by c.academy_level
+	</select>
+
+	<!-- 获取学术活动的统计结果 -->
+	<resultMap id="exchangeReport" type="java.util.Map">
+		<result column="c.type" property="type"></result>
+		<result column="count(1)" property="count"></result>
+	</resultMap>
+	<select id="getReportExchange" resultMap="exchangeReport"
+		parameterType="java.util.Map">
+		select c.type, count(1) as count from
+		(select distinct m.reference_id,
+		p.type
+		from project_member m, project_exchange p
+		where 1=1
+		<if test="username != null"> and m.username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.reference_id=p.id and m.type='exchange'
+		and m.deleted=0) c
+		group
+		by c.type
+	</select>
+
+	<!-- 个人主页上的统计信息 -->
+	<resultMap id="userReport" type="java.util.Map">
+		<result column="c.username" property="username"></result>
+		<result column="c.type" property="type"></result>
+		<result column="count(1)" property="count"></result>
+	</resultMap>
+	<select id="getUserReport" resultMap="userReport"
+		parameterType="java.util.Map">
+		select c.username, c.type, count(1) as count from
+		(select distinct
+		m.reference_id, m.username, m.type
+		from project_member m where 1=1
+		<if test="username != null"> and username=#{username} </if>
+		<if test="org_id != null"> and m.organization_id like CONCAT('%',#{org_id},'%')</if>
+		and m.deleted=0) c
+		group by c.type
+	</select>
+
+	<!-- 获取用户角色信息 -->
+	<select id="getUserRole" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		select role from role_user_rel where
+		username=#{username}
+	</select>
+
+	<!-- 获取所有角色信息 -->
+	<select id="getRole" resultType="java.util.List">
+		select name from role
+	</select>
+
+
+	<resultMap id="orgReport" type="java.util.Map">
+		<result column="c.organization_name" property="organization_name"></result>
+		<result column="c.type" property="type"></result>
+		<result column="count(1)" property="count"></result>
+	</resultMap>
+	<!--获取机构信息和总数 -->
+	<select id="getOrgReport" resultMap="orgReport"
+		parameterType="java.util.Map">
+		select c.organization_name, c.type, count(1) as count from
+		(select distinct m.reference_id, m.organization_name, m.type
+		from project_member m 
+		where 1=1
+		<if test=" org_id != null ">and m.organization_id= #{org_id}</if> 
+		and m.deleted=0) c
+		group by c.type;
+	</select>
+
+
+	<!-- 获取机构子机构总数  -->
+	<select id="getOrgChildCount" resultType="java.lang.Integer" parameterType = "java.util.Map">
+		select count(1) from organization  where deleted = 0 
+		<if test= "org_id != null"> and org_id = #{org_id}</if>
+	</select>
+
+</mapper>

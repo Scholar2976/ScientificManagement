@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.attachment.ProjectAttachmentMapper">
+	
+	
+	<select id="getAttachmentList" resultType="com.ccb.sm.entities.ProjectAttachment"
+		parameterType="java.util.Map">
+		select * from project_attachment where reference_id=#{reference_id} and type = #{type}
+	</select>
+
+	<!-- <select id="getResultListTotal" resultType="Integer"> select count(1) 
+		from project_result where year=#{year} and level=#{level} and type=#{type} 
+		and domain=#{domain} </select> -->
+
+	<!-- 根据result_id插入数据 -->
+	<insert id="insert" parameterType="com.ccb.sm.entities.ProjectAttachment">
+		<foreach collection="list" item="attachment" index="index" open=""
+			close="" separator=";">
+			insert into project_attachment
+			<trim suffixOverrides="," suffix=")" prefix="(">
+
+				<if test="attachment.id != null">id, </if>
+
+				<if test="attachment.reference_id != null">reference_id, </if>
+
+				<if test="attachment.filename != null">filename, </if>
+
+				<if test="attachment.filesize != null">`filesize`, </if>
+
+				<if test="attachment.fileurl != null">`fileurl`, </if>
+
+				<if test="attachment.phase != null">phase, </if>
+
+				<if test="attachment.memo != null">memo, </if>
+
+				<if test="attachment.type != null">type, </if>
+
+				<if test="attachment.created_time != null">created_time, </if>
+
+				<if test="attachment.modified_time != null">modified_time, </if>
+
+				<if test="attachment.deleted != null">deleted, </if>
+
+				<if test="attachment.deleted_time != null">deleted_time, </if>
+
+			</trim>
+			<trim suffixOverrides="," suffix=")" prefix="values (">
+
+				<if test="attachment.id != null">#{attachment.id,jdbcType=INTEGER}, </if>
+
+				<if test="attachment.reference_id != null">#{attachment.reference_id,jdbcType=VARCHAR}, </if>
+
+				<if test="attachment.filename != null">#{attachment.filename,jdbcType=VARCHAR}, </if>
+
+				<if test="attachment.filesize != null">#{attachment.filesize,jdbcType=INTEGER}, </if>
+
+				<if test="attachment.fileurl != null">#{attachment.fileurl,jdbcType=VARCHAR}, </if>
+
+				<if test="attachment.phase != null">#{attachment.phase,jdbcType=VARCHAR}, </if>
+
+				<if test="attachment.memo != null">#{attachment.memo,jdbcType=VARCHAR}, </if>
+
+				<if test="attachment.type != null">#{attachment.type,jdbcType=VARCHAR}, </if>
+
+				<if test="attachment.created_time != null">#{attachment.created_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="attachment.modified_time != null">#{attachment.modified_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="attachment.deleted != null">#{attachment.deleted,jdbcType=BIT}, </if>
+
+				<if test="attachment.deleted_time != null">#{attachment.deleted_time,jdbcType=TIMESTAMP}, </if>
+			</trim>
+		</foreach>
+	</insert>
+	<!-- 根据result_id删除数据 -->
+	<delete id="deleteByReferenceId" parameterType="java.lang.String">
+		delete from
+		project_attachment where reference_id = #{reference_id}
+	</delete>
+
+</mapper>

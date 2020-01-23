@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hospital301.scientificmanagement.dao.login.Menudao">
+	<!-- 根据用户权限去获取用户可以访问的菜单 -->
+	<select id="QueryMenuByUserPermission" resultType="Menu">
+		select menuId,name,href,icon,parent from menu
+		<foreach collection="userPermission" item="permission" separator=","
+			open="where userpermission in(" close=")">
+			#{permission}
+		</foreach>
+	</select>
+</mapper>

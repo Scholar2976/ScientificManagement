@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.paper.ProjectPaperMapper">
+
+	<sql id="Base_Column_List">
+		project_id, paper_id, title, contact, contact_name,
+		type,
+		issue_name,
+		impact_factor,
+		created_time, modified_time, deleted,
+		deleted_time
+	</sql>
+
+
+
+	<!--返回Paper表所有符合条件的记录 -->
+	<resultMap type="com.ccb.sm.entities.ProjectPaperJoinMember"
+		id="PaperJsonMember">
+		<id column="paper_id" property="paper_id" />
+		<collection property="first_author"
+			select="com.hospital301.scientificmanagement.dao.ProjectMemberMapper.QueryUserName"
+			column="{reference_id=paper_id type =first_author_type }">
+		</collection>
+		<collection property="other_author"
+			select="com.hospital301.scientificmanagement.dao.ProjectMemberMapper.QueryUserName"
+			column="{reference_id=paper_id,type=other_author_type}">
+		</collection>
+	</resultMap>
+	<resultMap id="PaperTotal" type="java.lang.Integer">
+		<result column="TOTAL" />
+	</resultMap>
+	<select id="getPaperList" resultMap="PaperJsonMember">
+		<!-- <bind name="_issue_name" value="'%'+issue_name+'%'"/> -->
+		SELECT
+		<include refid="Base_Column_List" />
+		,IFNULL(#{first_author_type},'') first_author_type,
+		IFNULL(#{other_author_type},'') other_author_type
+		from project_paper
+		where contact = #{contact} and
+		type = #{type} and
+		issue_name like CONCAT('%',#{issue_name},'%')
+		limit #{start},#{end}
+	</select>
+	
+	<!-- <select id="getPaperList" resultMap="PaperJsonMember,PaperTotal">
+		<bind name="_issue_name" value="'%'+issue_name+'%'"/>
+		SELECT SQL_CALC_FOUND_ROWS
+		<include refid="Base_Column_List" />
+		,IFNULL(#{first_author_type},'') first_author_type,
+		IFNULL(#{other_author_type},'') other_author_type
+		from project_paper
+		where contact = #{contact} and
+		type = #{type} and
+		issue_name like CONCAT('%',#{issue_name},'%')
+		limit #{start},#{end};
+		SELECT FOUND_ROWS() AS TOTAL;
+	</select> -->
+	
+	
+	
+	<!--根据论文表中的成果编号来查询总数 -->
+	<select id="getPaperListTotal" resultType="int"
+		parameterType="java.util.Map">
+		select count(1) from project_paper where
+		<where>
+			<trim suffixOverrides="and">
+				<if test="paper_id!= null">paper_id=#{Paper_id} and</if>
+			</trim>
+		</where>
+
+	</select>
+
+	<!-- 如果要处理的数据在数据库中存在则更新，如果不存在则插入 -->
+	<insert id="InsertOrUpdatePaperByPaperId" parameterType="com.ccb.sm.entities.ProjectPaper">
+		insert into project_paper
+		<trim suffixOverrides="," prefix="(" suffix=")">
+
+			<if test="id != null">id, </if>
+
+			<if test="projectId != null">project_id, </if>
+
+			<if test="paperId != null">paper_id, </if>
+
+			<if test="title != null">title, </if>
+
+			<if test="contact != null">contact, </if>
+
+			<if test="contactName != null">contact_name, </if>
+
+			<if test="type != null">type, </if>
+
+			<if test="issueName != null">issue_name, </if>
+
+			<if test="impactFactor != null">impact_factor, </if>
+
+			<if test="createdTime != null">created_time, </if>
+
+			<if test="modifiedTime != null">modified_time, </if>
+
+			<if test="deleted != null">deleted, </if>
+
+			<if test="deletedTime != null">deleted_time, </if>
+
+		</trim>
+		<trim suffixOverrides="," prefix="values (" suffix=")">
+
+			<if test="id != null">#{id,jdbcType=INTEGER}, </if>
+
+			<if test="projectId != null">#{project_id,jdbcType=VARCHAR}, </if>
+
+			<if test="paperId != null">#{paper_id,jdbcType=VARCHAR}, </if>
+
+			<if test="title != null">#{title,jdbcType=VARCHAR}, </if>
+
+			<if test="contact != null">#{contact,jdbcType=VARCHAR}, </if>
+
+			<if test="contactName != null">#{contact_name,jdbcType=VARCHAR}, </if>
+
+			<if test="type != null">#{type,jdbcType=VARCHAR}, </if>
+
+			<if test="issueName != null">#{issue_name,jdbcType=VARCHAR}, </if>
+
+			<if test="impactFactor != null">#{impact_factor,jdbcType=VARCHAR}, </if>
+
+			<if test="createdTime != null">#{created_time,jdbcType=TIMESTAMP}, </if>
+
+			<if test="modifiedTime != null">#{modified_time,jdbcType=TIMESTAMP}, </if>
+
+			<if test="deleted != null">#{deleted,jdbcType=BIT}, </if>
+
+			<if test="deletedTime != null">#{deleted_time,jdbcType=TIMESTAMP}, </if>
+		</trim>
+		ON DUPLICATE KEY UPDATE
+		<if test="project_id != null">project_id = #{project_id,jdbcType=VARCHAR}, </if>
+
+		<if test="paper_d != null">paper_id = #{paper_id,jdbcType=VARCHAR}, </if>
+
+		<if test="title != null">title = #{title,jdbcType=VARCHAR}, </if>
+
+		<if test="contact != null">contact = #{contact,jdbcType=VARCHAR}, </if>
+
+		<if test="contact_name != null">contact_name = #{contact_name,jdbcType=VARCHAR}, </if>
+
+		<if test="type != null">type = #{type,jdbcType=VARCHAR}, </if>
+
+		<if test="issue_name != null">issue_name = #{issue_mame,jdbcType=VARCHAR}, </if>
+
+		<if test="impact_factor != null">impact_factor = #{impact_factor,jdbcType=VARCHAR}, </if>
+
+		<if test="created_time != null">created_time = #{created_time,jdbcType=TIMESTAMP}, </if>
+
+		<if test="modified_time != null">modified_time = #{modified_time,jdbcType=TIMESTAMP}, </if>
+
+		<if test="deleted != null">deleted = #{deleted,jdbcType=BIT}, </if>
+
+		<if test="deleted_time != null">deleted_time = #{deleted_time,jdbcType=TIMESTAMP}, </if>
+	</insert>
+</mapper>

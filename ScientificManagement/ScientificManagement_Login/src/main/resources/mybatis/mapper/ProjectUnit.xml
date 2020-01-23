@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.scientificpayoffs.unit.ProjectUnitMapper">
+
+	<!-- <resultMap id="ProjectResult" type="com.ccb.sm.entities.ProjectResult"> 
+		</resultMap> <resultMap id="Resultcount" type="java.lang.Integer"> <result 
+		column="count"/> </resultMap> -->
+	<!-- <select id="getResultList" resultMap="ProjectResult,Resultcount"> select 
+		SQL_CALC_FOUND_ROWS * from project_result where year=#{year} and level=#{level} 
+		and type=#{type} and domain=#{domain} limit #{start} ,#{end}; SELECT FOUND_ROWS() 
+		AS COUNT; </select> -->
+	<select id="getUnitList" resultType="com.ccb.sm.entities.ProjectUnit"
+		parameterType="java.util.Map">
+		select * from project_unit where reference_id=#{reference_id}
+	</select>
+
+	<!-- <select id="getResultListTotal" resultType="Integer"> select count(1) 
+		from project_result where year=#{year} and level=#{level} and type=#{type} 
+		and domain=#{domain} </select> -->
+
+	<!-- 根据result_id插入数据 -->
+	<insert id="BatchInsert" parameterType="java.util.List">
+		<foreach collection="list" item="unit" index="index" open=""
+			close="" separator=";">
+			insert into project_unit
+			<trim suffixOverrides="," suffix=")" prefix="(">
+
+				<if test="unit.id != null">id, </if>
+
+				<if test="unit.reference_id != null">reference_id, </if>
+
+				<if test="unit.name != null">name, </if>
+
+				<if test="unit.type != null">type, </if>
+
+				<if test="unit.created_time != null">created_time, </if>
+
+				<if test="unit.modified_time != null">modified_time, </if>
+
+				<if test="unit.deleted != null">deleted, </if>
+
+				<if test="unit.deleted_time != null">deleted_time, </if>
+
+			</trim>
+			<trim suffixOverrides="," suffix=")" prefix="values (">
+
+				<if test="unit.id != null">#{unit.id,jdbcType=INTEGER}, </if>
+
+				<if test="unit.reference_id != null">#{unit.reference_id,jdbcType=VARCHAR}, </if>
+
+				<if test="unit.name != null">#{unit.name,jdbcType=VARCHAR}, </if>
+
+				<if test="unit.type != null">#{unit.type,jdbcType=VARCHAR}, </if>
+
+				<if test="unit.created_time != null">#{unit.created_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="unit.modified_time != null">#{unit.modified_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="unit.deleted != null">#{unit.deleted,jdbcType=BIT}, </if>
+
+				<if test="unit.deleted_time != null">#{unit.deleted_time,jdbcType=TIMESTAMP}, </if>
+			</trim>
+		</foreach>
+	</insert>
+	<!-- 根据result_id删除数据 -->
+	<delete id="deleteByReferenceId" parameterType="java.lang.String">
+		delete from project_unit where reference_id = #{reference_id}
+	</delete>
+
+</mapper>

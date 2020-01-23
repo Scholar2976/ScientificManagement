@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.hospital301.scientificmanagement.dao.academicPost.AcademyPostMapper">
+
+	<!-- <resultMap id="ProjectResult" type="com.ccb.sm.entities.ProjectResult"> 
+		</resultMap> <resultMap id="Resultcount" type="java.lang.Integer"> <result 
+		column="count"/> </resultMap> -->
+	<!-- <select id="getResultList" resultMap="ProjectResult,Resultcount"> select 
+		SQL_CALC_FOUND_ROWS * from project_result where year=#{year} and level=#{level} 
+		and type=#{type} and domain=#{domain} limit #{start} ,#{end}; SELECT FOUND_ROWS() 
+		AS COUNT; </select> -->
+	<select id="getAcademyListOfPage" resultType="com.ccb.sm.entities.ProjectAcademyPost"
+		parameterType="java.util.Map">
+		select * from project_academy_post
+		<where>
+			<trim suffixOverrides="and">
+				<if test="academy_name!=null">academy_name like CONCAT('%',#{academy_name},'%') and
+				</if>
+				deleted != false
+			</trim>
+			limit #{start},#{end}
+		</where>
+	</select>
+
+	<select id="getResultListTotal" resultType="Integer"
+		parameterType="java.util.Map">
+		select count(1) from project_academy_post
+		<where>
+			<trim suffixOverrides="and">
+				<if test="academy_name!=null">academy_name like CONCAT('%',#{academy_name},'%') and
+				</if>
+				deleted != false
+			</trim>
+		</where>
+	</select>
+
+	<!-- 根据result_id批量插入数据 -->
+	<insert id="Batchinsert" parameterType="com.ccb.sm.entities.ProjectAcademyPost">
+		<foreach collection="list" item="result" index="index" open=""
+			close="" separator=";">
+			insert into project_academy_post
+
+			<trim suffixOverrides="," suffix=")" prefix="(">
+
+				<!-- <if test="id != null">id, </if> -->
+
+				<if test="result.result_id != null">result_id, </if>
+
+				<if test="result.year != null">year, </if>
+
+				<if test="result.type != null">type, </if>
+
+				<if test="result.level != null">level, </if>
+
+				<if test="result.title != null">title, </if>
+
+				<if test="result.domain != null">domain, </if>
+
+				<if test="result.summary != null">summary, </if>
+
+				<if test="result.expect_benefit != null">expect_benefit, </if>
+
+				<if test="result.created_time != null">created_time, </if>
+
+				<if test="result.modified_time != null">modified_time, </if>
+
+				<if test="result.deleted != null">deleted, </if>
+
+				<if test="result.deleted_time != null">deleted_time, </if>
+
+			</trim>
+			<trim suffixOverrides="," suffix=")" prefix="values (">
+
+				<if test="result.id != null">#{result.id,jdbcType=INTEGER}, </if>
+
+				<if test="result.result_id != null">#{result.result_id,jdbcType=VARCHAR}, </if>
+
+				<if test="result.year != null">#{result.year,jdbcType=INTEGER}, </if>
+
+				<if test="result.type != null">#{result.type,jdbcType=VARCHAR}, </if>
+
+				<if test="result.level != null">#{result.level,jdbcType=VARCHAR}, </if>
+
+				<if test="result.title != null">#{result.title,jdbcType=VARCHAR}, </if>
+
+				<if test="result.domain != null">#{result.domain,jdbcType=VARCHAR}, </if>
+
+				<if test="result.summary != null">#{result.summary,jdbcType=VARCHAR}, </if>
+
+				<if test="result.expect_benefit != null">#{result.expect_benefit,jdbcType=VARCHAR}, </if>
+
+				<if test="result.created_time != null">#{result.created_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="result.modified_time != null">#{result.modified_time,jdbcType=TIMESTAMP}, </if>
+
+				<if test="result.deleted != null">#{result.deleted}, </if>
+
+				<if test="result.deleted_time != null">#{result.deleted_time,jdbcType=TIMESTAMP}, </if>
+			</trim>
+		</foreach>
+	</insert>
+	<!--根据ResultId 批量更新数据 -->
+	<update id="BatchupdateByResultId" parameterType="com.ccb.sm.entities.ProjectAcademyPost">
+		<foreach collection="list" item="result" index="index" open=""
+			close="" separator=";">
+			update project_academy_post
+
+			<set>
+				<trim suffixOverrides=",">
+					<if test="result.result_id != null">result_id=#{result.result_id,jdbcType=VARCHAR}, </if>
+
+					<if test="result.year != null">year=#{result.result.year,jdbcType=INTEGER}, </if>
+
+					<if test="result.type != null">type=#{result.type,jdbcType=VARCHAR}, </if>
+
+					<if test="result.level != null">level=#{result.level,jdbcType=VARCHAR}, </if>
+
+					<if test="result.title != null">title=#{result.title,jdbcType=VARCHAR}, </if>
+
+					<if test="result.domain != null">domain=#{result.domain,jdbcType=VARCHAR}, </if>
+
+					<if test="result.summary != null">summary=#{result.summary,jdbcType=VARCHAR}, </if>
+
+					<if test="result.expect_benefit != null">expect_benefit=#{result.expect_benefit,jdbcType=VARCHAR},
+					</if>
+
+					<if test="result.created_time != null">created_time=#{result.created_time,jdbcType=TIMESTAMP},
+					</if>
+
+					<if test="result.modified_time != null">modified_time=#{result.modified_time,jdbcType=TIMESTAMP},
+					</if>
+
+					<if test="result.deleted != null">deleted=#{result.deleted}, </if>
+
+					<if test="result.deleted_time != null">#{result.deleted_time,jdbcType=TIMESTAMP}, </if>
+				</trim>
+			</set>
+			<where>
+				<trim suffixOverrides="and">
+					<if test="id != null">
+						id = #{id,jdbcType=INTEGER} and
+					</if>
+				</trim>
+			</where>
+		</foreach>
+	</update>
+
+	<!--根据ResultId更新数据 -->
+	<update id="updateByResultId" parameterType="com.ccb.sm.entities.ProjectAcademyPost">
+		close="" separator=";">
+		update project_academy_post
+		<set>
+			<trim suffixOverrides=",">
+				<if test="academy_id != null">academy_id = #{academy_id}, </if>
+
+				<if test="academy_name != null">academy_name =#{academy_name}, </if>
+
+				<if test="created_time != null">created_time = #{created_time}, </if>
+
+				<if test="creator != null">creator =#{creator}, </if>
+
+				<if test="deleted != null">deleted =#{deleted}, </if>
+
+				<if test="deleted_time != null">deleted_time =#{deleted_time}, </if>
+
+				<if test="duty != null">duty = #{duty}, </if>
+
+				<if test="modified_time != null">modified_time = #{modified_time}, </if>
+
+				<if test="modifier != null">modifier = #{modifier}, </if>
+
+				<if test="nickname != null">nickname = #{nickname}, </if>
+
+				<if test="username != null">username = #{username}, </if>
+			</trim>
+		</set>
+		<where>
+			<trim suffixOverrides="and">
+				<if test="id != null">
+					id = #{id,jdbcType=INTEGER} and
+				</if>
+			</trim>
+		</where>
+	</update>
+
+	<!-- 根据result_id插入数据 -->
+	<insert id="insert" parameterType="com.ccb.sm.entities.ProjectAcademyPost">
+		close="" separator=";">
+		insert into project_academy_post
+		<trim suffixOverrides="," suffix=")" prefix="(">
+
+			<if test="academy_id != null">academy_id, </if>
+
+			<if test="academy_name != null">academy_name, </if>
+
+			<if test="created_time != null">created_time, </if>
+
+			<if test="creator != null">creator, </if>
+
+			<if test="deleted != null">deleted, </if>
+
+			<if test="deleted_time != null">deleted_time, </if>
+
+			<if test="duty != null">duty, </if>
+
+			<if test="modified_time != null">modified_time, </if>
+
+			<if test="modifier != null">modifier, </if>
+
+			<if test="nickname != null">nickname, </if>
+
+			<if test="username != null">`username`, </if>
+		</trim>
+		<trim suffixOverrides="," suffix=")" prefix="values (">
+
+			<if test="academy_id != null">#{academy_id}, </if>
+
+			<if test="academy_name != null">#{academy_name}, </if>
+
+			<if test="created_time != null">#{created_time}, </if>
+
+			<if test="creator != null">#{creator}, </if>
+
+			<if test="deleted != null">#{deleted}, </if>
+
+			<if test="deleted_time != null">#{deleted_time}, </if>
+
+			<if test="duty != null">#{duty}, </if>
+
+			<if test="modified_time != null">#{modified_time}, </if>
+
+			<if test="modifier != null">#{modifier}, </if>
+
+			<if test="nickname != null">#{nickname}, </if>
+
+			<if test="username != null">#{username}, </if>
+		</trim>
+	</insert>
+
+
+	<!-- 根据result_id删除数据 -->
+	<delete id="DeleteById" parameterType="java.lang.Integer">
+		delete from
+		project_academy_post where id = #{id}
+	</delete>
+	
+	<!-- 逻辑删除 -->
+	<update id="LogicDelete " parameterType="java.util.Map">
+		update project_academy_post
+		<set>
+			<trim suffixOverrides=",">
+				<if test="deleted != null">deleted =#{deleted}, </if>
+				<if test="deleted_time != null">deleted_time =#{deleted_time}, </if>
+			</trim>
+		</set>
+		<where>
+			<trim suffixOverrides="and">
+				<if test="id != null">
+					id = #{id,jdbcType=INTEGER} and
+				</if>
+			</trim>
+		</where>
+	</update>
+
+	<select id="getResultList" resultType="com.ccb.sm.entities.ProjectAcademyPost"
+		parameterType="java.util.Map">
+		select * from project_academy_post
+		<where>
+			<trim suffixOverrides="and">
+				<if test="id!=null">id=#{id} and</if>
+			</trim>
+		</where>
+	</select>
+</mapper>
