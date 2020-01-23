@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ccb.sm.entities.Menu;
+import com.sun.corba.se.impl.orbutil.graph.NodeData;
 
 public class TreeUtil {
 
@@ -18,7 +19,9 @@ public class TreeUtil {
 	public static List<Menu> data(List<Menu> nodes) {
 		ArrayList<Menu> rootNode = new ArrayList<Menu>();
 		for (Menu node : nodes) {
-			if (node.getParent().equals("000000")) {
+			if(node.getMenuId().equals("000000000"))
+				continue;
+			if (node.getParent().equals("000000000")) {
 				rootNode.add(node);
 			}
 		}
@@ -42,7 +45,7 @@ public class TreeUtil {
 		// 存放子菜单的集合
 		ArrayList<Menu> listChild = new ArrayList<>();
 		for (Menu node : allNode) {
-			if (node.getParent().equals(id)) {
+			if (node.getParent()!= null && node.getParent().equals(id)) {
 				listChild.add(node);
 			}
 		}

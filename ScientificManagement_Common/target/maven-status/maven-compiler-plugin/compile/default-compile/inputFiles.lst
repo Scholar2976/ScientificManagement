@@ -1,6 +1,7 @@
 F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\baseDao\Factory\BaseFactory.java
 F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\util\DataUtil.java
 F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\entities\Menu.java
+F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\entities\ProjectCooperation.java
 F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\response\ResponsePage.java
 F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\util\DaoUtil.java
 F:\CCB\ScientificManagement\ScientificManagement_Common\src\main\java\com\ccb\sm\entities\ProjectUnit.java

@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.jdbc.SQL;
 import org.apache.ibatis.scripting.xmltags.WhereSqlNode;
-//import org.hibernate.validator.internal.util.Contracts;
 import org.omg.CORBA.PRIVATE_MEMBER;
 import org.springframework.beans.factory.config.YamlProcessor.ResolutionMethod;
 
@@ -35,14 +34,14 @@ public class BaseFactory<T>
 		String string = "";
 		String string2 = "";
 		Object object = map.get("entry");
-		sb.append("INSERT INTO "+this.getTableName(object.getClass())+"t (");
+		sb.append("INSERT INTO "+this.getTableName(object.getClass())+"  (");
 		List<Field> fields = getFields(object.getClass());
 		for(Field field : fields)
 		{
 			string+=" `"+field.getName()+"` ,";
-			string2+="#{entry."+field.getName()+"},";
+			string2+="#{param1."+field.getName()+"},";
 		}
-		sb.append(string.substring(0, string.length()-1).toString()+") values");
+		sb.append(string.substring(0, string.length()-1).toString()+") value ");
 		sb.append("("+string2.substring(0,string2.length()-1)+")");
 //		System.out.println(sb.toString());
 		return sb.toString();
@@ -56,9 +55,8 @@ public class BaseFactory<T>
 	 */
 	public String deleteByMap(String tableName, Map<String,Object> conditionMap)
 	{
-		String sqlstr = "delete from "+tableName+" t where 1=1 ";
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(sqlstr);
+		buffer.append("delete from "+tableName+" t where 1=1 ");
 		buffer.append(this.getWhereSql(conditionMap, "param2"));
 		return buffer.toString();
 		
@@ -72,7 +70,7 @@ public class BaseFactory<T>
 		buffer.append(getWhereSql(conditionMap, "param2"));
 		return  buffer.toString();
 	}
-	
+		
 	public String logicDeleteById(String tableName,Integer id) {
 		if(null == id || id.equals(""))
 			return "false";
@@ -105,7 +103,7 @@ public class BaseFactory<T>
 		buffer.append(this.getWhereSql(conditionMap, "param2"));
 		buffer.append(this.getWhereSqlByUserOrOrg(map, "param3", key));
 		buffer.append(this.getWhereSql(conditionMap, "param2"));
-
+		buffer.append(this.getGroupBy("m.reference_id"));
 		return buffer.toString();
 	}
 	
@@ -244,6 +242,7 @@ public class BaseFactory<T>
 	public String batchInsert(Map map) {
 		StringBuffer buffer = new StringBuffer();
 		StringBuffer insert = new StringBuffer();
+		StringBuffer update = new StringBuffer();
 		String str = new String();
 		List list = (List) map.get("list");
 		Object object = list.get(0);
@@ -256,6 +255,7 @@ public class BaseFactory<T>
 				continue;
 			insert.append(" `"+field.getName()+"` ,");
 			str+="#'{'list[{0}]."+field.getName()+"},";
+			update.append("`"+field.getName()+"`= VALUES(`"+field.getName()+"`)," );
 		}
 		buffer.append(insert.substring(0, insert.length()-1).toString()+") values");
 
@@ -269,6 +269,8 @@ public class BaseFactory<T>
 				buffer.append(",");
 			}
 		}
+		buffer.append(" ON DUPLICATE KEY UPDATE " + update.substring(0,(update.toString().length()-1)).toString());
+		System.out.println(buffer.toString());
 		return buffer.toString();
 
 	}
@@ -308,11 +310,13 @@ public class BaseFactory<T>
 	
 	public String totalByUserOrOrg(String tableName, Map<String,Object> conditionMap,Map<String ,Object> map , String key )
 	{
-		String sqlstr = "select count(1) from "+tableName+" t ,project_member m where 1=1 ";
+		String sqlstr = "select count(1) from ( select count(1) from "+tableName+" t ,project_member m where 1=1 ";
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(sqlstr);
 		buffer.append(this.getWhereSql(conditionMap, "param2"));
 		buffer.append(this.getWhereSqlByUserOrOrg(map, "param3", key));
+		buffer.append(this.getGroupBy("m.reference_id"));
+		buffer.append(") temp");
 		return buffer.toString();
 	}
 	
@@ -366,10 +370,10 @@ public class BaseFactory<T>
 		StringBuffer buffer = new StringBuffer();
 		if(null == conditionMap || conditionMap.size()==0)
 			return buffer.append("").toString();
-		if(!conditionMap.containsKey("deleted"))
-		{
-			buffer.append("and t.deleted = false");
-		}
+//		if(!conditionMap.containsKey("deleted"))
+//		{
+//			buffer.append("and t.deleted = false");
+//		}
 		for(String key : conditionMap.keySet())
 		{
 			if(key.startsWith("page"))
@@ -495,5 +499,16 @@ public class BaseFactory<T>
 			}
 		}
 		return object;
+	}
+	
+	private String getGroupBy(String ... list )
+	{
+		StringBuffer groupBy = new StringBuffer();
+		groupBy.append(" group by ");
+		for(String column : list)
+		{
+			groupBy.append(column+",");
+		}
+		return groupBy.substring(0, groupBy.toString().length()-1).toString();
 	}
 }

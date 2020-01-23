@@ -82,4 +82,32 @@ public interface ReportMapper
 	 */
 	public List<Map<String,Object>> getUserReport(Map conditionMap);
 	
+	/**
+	 * 获取用户角色信息
+	 * @param username
+	 * @return
+	 */
+	public List<String> getUserRole(String username);
+	
+	/**
+	 * 获取所有角色名称
+	 * @return
+	 */
+	public List<String> getRole();
+	
+	/**
+	 * 
+	 * @param conditionMap
+	 * @return
+	 */
+	public List<Map<String, Object>> getOrgReport(Map<String,Object> conditionMap);
+	
+	/**
+	 * 获取机构子机构总数
+	 * @param conditionMap
+	 * @return
+	 */
+	public Integer getOrgChildCount(Map<String,Object> conditionMap);
+	
+	
 }	

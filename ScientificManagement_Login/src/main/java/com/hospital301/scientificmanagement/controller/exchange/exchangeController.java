@@ -21,6 +21,7 @@ import com.ccb.sm.util.ParesJsonUtil;
 import com.hospital301.scientificmanagement.Redis.Redis;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
 import com.hospital301.scientificmanagement.controller.user.userController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
 import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.controller.util.TypeEnum;
 import com.hospital301.scientificmanagement.util.Util;
@@ -38,53 +39,27 @@ public class exchangeController extends BaseController
 	@RequestMapping(value="/exchange/list",method=RequestMethod.POST) 
 	public Object list(@RequestBody String requestPayload)throws Exception
 	{
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			if(requestPayloadMap.containsKey("title"))
-			{
-				conditionMap.put("title_like", requestPayloadMap.get("title"));
-			}
-			int pageSize = 0;
-			if(requestPayloadMap.containsKey("tRecInPage"))
-			{
-				
-				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-				conditionMap.put("pageEnd", pageSize);
-			}
-			if(requestPayloadMap.containsKey("tPageJump"))
-			{
-				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-				if (page == 0) 
-				{
-					page = 1;
-				}
-				conditionMap.put("pageStart", (page - 1) * pageSize);
-			}
-			
-		}
-		return this.baseGetList(null, TableNameEnum.PROJECTEXCHANGE.getName(),conditionMap);
+		return this.baseGetList(TableNameEnum.PROJECTEXCHANGE.getName(),this.getConditionMap(requestPayload));
 	}
 	
 	@RequestMapping(value="/exchange/listByUser",method=RequestMethod.POST) 
 	public Object listByUser(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload)throws Exception
 	{
-		return this.baseGetListByUser(TableNameEnum.PROJECTEXCHANGE.getName(), this.getConditionMap(requestPayload), this.getByUserMap(getRedisUserInfo("token:"+tokenId).getUsername()));
+		return this.baseGetListByUser(TableNameEnum.PROJECTEXCHANGE.getName(), this.getConditionMap(requestPayload), this.getByUserMap(RedisUtil.getRedisUserInfo(tokenId).getUsername()));
 	}
 	
 	@RequestMapping(value="/exchange/listByOrg",method=RequestMethod.POST) 
 	public Object listByOrg(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload)throws Exception
 	{
-		return this.baseGetListByOrg(TableNameEnum.PROJECTEXCHANGE.getName(), this.getConditionMap(requestPayload), this.getByOrgMap(getRedisUserInfo("token:"+tokenId).getOrganization_id()));
+		return this.baseGetListByOrg(TableNameEnum.PROJECTEXCHANGE.getName(), this.getConditionMap(requestPayload), this.getByOrgMap(RedisUtil.getRedisUserInfo(tokenId).getOrganization_id()));
 	}
 	
 	@RequestMapping(value="/exchange/add",method=RequestMethod.POST)
-	public Object add(@RequestBody String requestPayload) throws Exception
+	public Object add(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception
 	{
 		if(null != requestPayload)
 		{
-			ProjectExchange projectExchange = (ProjectExchange) requestAdd(requestPayload,ProjectExchange.class,this.getAssociationTableJsonNode(),TypeEnum.EXCHANGE.getName());
+			ProjectExchange projectExchange = (ProjectExchange) requestAdd(requestPayload,ProjectExchange.class,this.getAssociationTableJsonNode(),TypeEnum.EXCHANGE.getName(),RedisUtil.getRedisUserInfo(tokenId));
 			return projectExchange;
 		}
 		return null;
@@ -132,6 +107,7 @@ public class exchangeController extends BaseController
 			{
 				conditionMap.put("title_like", requestPayloadMap.get("title"));
 			}
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
@@ -175,10 +151,5 @@ public class exchangeController extends BaseController
 		list.add("unit");
 		list.add("undertake_unit");
 		return list;
-	}
-	
-	private User getRedisUserInfo(String tokenid)
-	{
-		return (User) redis.getUserInfo(tokenid);
 	}
 }

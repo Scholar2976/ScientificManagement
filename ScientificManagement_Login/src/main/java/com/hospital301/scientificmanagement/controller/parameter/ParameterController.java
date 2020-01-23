@@ -34,6 +34,7 @@ public class ParameterController extends BaseController {
 		} else {
 			conditionMap.put("range", "available");
 		}
+		conditionMap.put("deleted", false);
 		Object jsonstr = parameterService.get(conditionMap);
 		return jsonstr;
 	}
@@ -47,6 +48,7 @@ public class ParameterController extends BaseController {
 			if (requestPayloadMap.containsKey("name")) {
 				conditionMap.put("name_like", requestPayloadMap.get("name"));
 			}
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if (requestPayloadMap.containsKey("tRecInPage")) {
 
@@ -62,7 +64,7 @@ public class ParameterController extends BaseController {
 			}
 
 		}
-		return this.baseGetList(null, TableNameEnum.PARAMETER.getName(), conditionMap);
+		return this.baseGetList(TableNameEnum.PARAMETER.getName(), conditionMap);
 	}
 
 	@RequestMapping(value = "/parameter/save", method = RequestMethod.POST)
@@ -96,6 +98,7 @@ public class ParameterController extends BaseController {
 			} else {
 				conditionMap.put("range", "available");
 			}
+			conditionMap.put("deleted", false);
 		}
 		return parameterService.getTree(conditionMap);
 	}
@@ -118,6 +121,7 @@ public class ParameterController extends BaseController {
 			} else {
 				conditionMap.put("range", "available");
 			}
+			conditionMap.put("deleted", false);
 		}
 		return parameterService.getTree(conditionMap);
 	}

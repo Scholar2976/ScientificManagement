@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.context.support.StaticApplicationContext;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +22,8 @@ public class ParesJsonUtil {
 	/**
 	 * 存储解析后的json数据
 	 */
-	private static Map map = new HashMap();
+	
+	private static Map<String,Object> map = new HashMap<String,Object>();
 	
 	/**
 	 * 解析json字符串为对象
@@ -31,10 +34,11 @@ public class ParesJsonUtil {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public static Object jsonToObj(Object obj, String jsonStr)
+	public static Object jsonToObj(Class clazz, String jsonStr)
 			throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		return obj = mapper.readValue(jsonStr, obj.getClass());
+		Object object = mapper.readValue(jsonStr, clazz);
+		return object;
 	}
 	
 	
@@ -46,9 +50,10 @@ public class ParesJsonUtil {
 	 * @return
 	 */
 	public static Map JsonTOMap(String json) {
+		map.clear();
 		if (null == json || "".equals(json)) {
 			map.put("error", "json数据为空 ");
-			return map;
+			return map ;
 		}
 		try {
 			ParseJsonData(json);

@@ -1,5 +1,6 @@
 package com.ccb.sm.entities;
 
+import java.security.KeyStore.PrivateKeyEntry;
 import java.util.Date;
 import java.util.List;
 
@@ -7,40 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProjectWork {
-	
-	private int id;
-
-	// 类别
-	private String category;
-
-	// 主编
-	private String chief_editor;
-
-	// 主编姓名
-	private String chief_editor_name;
-
-	// 创建时间
-	private Date created_time;
-
-	// 删除状态
-	private boolean deleted;
-
-	// 删除时间
-	private Date deleted_time;
-
-	// 领域分类
-	private String domain_catetory;
-
-	// 是否翻著
-//	@JsonProperty("is_translation")
-	@JsonIgnore
-	private boolean is_translation;
+	// id
+	private Integer id;
 
 	// 书号
 	private String isbn;
 
-	// 更新时间
-	private Date modified_time;
+	// 名称
+	private String title;
+
+	// 类别 (参数名：workCategoryType)
+	private String category;
 
 	// 出版社/出版单位
 	private String press;
@@ -48,114 +26,90 @@ public class ProjectWork {
 	// 出版时间
 	private Date publish_date;
 
-	// 发行范围
-	private String  publish_range;
-
-	// 名称
-	private String title;
-
 	// 总字数(千字)
-	private int wordnum;
+	private Integer wordnum;
 
+	// 是否翻著
+	private char is_translation;
+
+	// 主编
+	private String chief_authors;
+
+	// 副主编
+	private String deputy_authors;
+
+	// 编著人员
+	private String members;
+
+	// 编著单位
+	private String units;
+
+	// 发行范围 (参数名：workRangType)
+	private String publish_range;
+
+	// 领域分类 (参数名：classification)
+	private String domain;
+
+	// 创建人
+	private String creator;
+
+	// 修改人
+	private String modifier;
+
+	// 删除人
+	private String deleter;
+
+	// 创建时间
+	private Date created_time;
+
+	// 更新时间
+	private Date modified_time;
+
+	// 删除状态
+	private Boolean deleted;
+
+	// 删除时间
+	private Date deleted_time;
 
 	public ProjectWork() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public ProjectWork(int id, String category, String chief_editor, String chief_editor_name, Date created_time,
-			boolean deleted, Date deleted_time, String domain_catetory, boolean is_translation, String isbn,
-			Date modified_time, String press, Date publish_date, String publish_range, String title, int wordnum) {
+	public ProjectWork(Integer id, String isbn, String title, String category, String press, Date publish_date,
+			Integer wordnum, char is_translation, String chief_authors, String deputy_authors, String members,
+			String units, String publish_range, String domain, String creator, String modifier, String deleter,
+			Date created_time, Date modified_time, Boolean deleted, Date deleted_time) {
 		super();
 		this.id = id;
-		this.category = category;
-		this.chief_editor = chief_editor;
-		this.chief_editor_name = chief_editor_name;
-		this.created_time = created_time;
-		this.deleted = deleted;
-		this.deleted_time = deleted_time;
-		this.domain_catetory = domain_catetory;
-		this.is_translation = is_translation;
 		this.isbn = isbn;
-		this.modified_time = modified_time;
+		this.title = title;
+		this.category = category;
 		this.press = press;
 		this.publish_date = publish_date;
-		this.publish_range = publish_range;
-		this.title = title;
 		this.wordnum = wordnum;
+		this.is_translation = is_translation;
+		this.chief_authors = chief_authors;
+		this.deputy_authors = deputy_authors;
+		this.members = members;
+		this.units = units;
+		this.publish_range = publish_range;
+		this.domain = domain;
+		this.creator = creator;
+		this.modifier = modifier;
+		this.deleter = deleter;
+		this.created_time = created_time;
+		this.modified_time = modified_time;
+		this.deleted = deleted;
+		this.deleted_time = deleted_time;
 	}
 
-
-
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	public String getChief_editor() {
-		return chief_editor;
-	}
-
-	public void setChief_editor(String chief_editor) {
-		this.chief_editor = chief_editor;
-	}
-
-	public String getChief_editor_name() {
-		return chief_editor_name;
-	}
-
-	public void setChief_editor_name(String chief_editor_name) {
-		this.chief_editor_name = chief_editor_name;
-	}
-
-	public Date getCreated_time() {
-		return created_time;
-	}
-
-	public void setCreated_time(Date created_time) {
-		this.created_time = created_time;
-	}
-
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
-
-	public Date getDeleted_time() {
-		return deleted_time;
-	}
-
-	public void setDeleted_time(Date deleted_time) {
-		this.deleted_time = deleted_time;
-	}
-
-	public String getDomain_catetory() {
-		return domain_catetory;
-	}
-
-	public void setDomain_catetory(String domain_catetory) {
-		this.domain_catetory = domain_catetory;
-	}
-
-	public boolean isIs_translation() {
-		return is_translation;
-	}
-
-	public void setIs_translation(boolean is_translation) {
-		this.is_translation = is_translation;
 	}
 
 	public String getIsbn() {
@@ -166,12 +120,20 @@ public class ProjectWork {
 		this.isbn = isbn;
 	}
 
-	public Date getModified_time() {
-		return modified_time;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setModified_time(Date modified_time) {
-		this.modified_time = modified_time;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	public String getPress() {
@@ -190,6 +152,54 @@ public class ProjectWork {
 		this.publish_date = publish_date;
 	}
 
+	public Integer getWordnum() {
+		return wordnum;
+	}
+
+	public void setWordnum(Integer wordnum) {
+		this.wordnum = wordnum;
+	}
+
+	public char getIs_translation() {
+		return is_translation;
+	}
+
+	public void setIs_translation(char is_translation) {
+		this.is_translation = is_translation;
+	}
+
+	public String getChief_authors() {
+		return chief_authors;
+	}
+
+	public void setChief_authors(String chief_authors) {
+		this.chief_authors = chief_authors;
+	}
+
+	public String getDeputy_authors() {
+		return deputy_authors;
+	}
+
+	public void setDeputy_authors(String deputy_authors) {
+		this.deputy_authors = deputy_authors;
+	}
+
+	public String getMembers() {
+		return members;
+	}
+
+	public void setMembers(String members) {
+		this.members = members;
+	}
+
+	public String getUnits() {
+		return units;
+	}
+
+	public void setUnits(String units) {
+		this.units = units;
+	}
+
 	public String getPublish_range() {
 		return publish_range;
 	}
@@ -198,20 +208,68 @@ public class ProjectWork {
 		this.publish_range = publish_range;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getDomain() {
+		return domain;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
-	public int getWordnum() {
-		return wordnum;
+	public String getCreator() {
+		return creator;
 	}
 
-	public void setWordnum(int wordnum) {
-		this.wordnum = wordnum;
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+
+	public String getModifier() {
+		return modifier;
+	}
+
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
+	}
+
+	public String getDeleter() {
+		return deleter;
+	}
+
+	public void setDeleter(String deleter) {
+		this.deleter = deleter;
+	}
+
+	public Date getCreated_time() {
+		return created_time;
+	}
+
+	public void setCreated_time(Date created_time) {
+		this.created_time = created_time;
+	}
+
+	public Date getModified_time() {
+		return modified_time;
+	}
+
+	public void setModified_time(Date modified_time) {
+		this.modified_time = modified_time;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public Date getDeleted_time() {
+		return deleted_time;
+	}
+
+	public void setDeleted_time(Date deleted_time) {
+		this.deleted_time = deleted_time;
 	}
 
 }

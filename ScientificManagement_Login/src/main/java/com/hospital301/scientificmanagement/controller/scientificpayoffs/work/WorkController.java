@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.shared.artifact.filter.StatisticsReportingArtifactFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +18,7 @@ import com.ccb.sm.entities.ProjectWork;
 import com.ccb.sm.util.JsonUtil;
 import com.ccb.sm.util.ParesJsonUtil;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
 import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.controller.util.TypeEnum;
 import com.hospital301.scientificmanagement.services.scientificpayoffs.work.WorkService;
@@ -31,54 +34,28 @@ public class WorkController extends BaseController
 	@RequestMapping(value="/work/list",method=RequestMethod.POST)
 	public Object getWorkList(@RequestBody String requestPayload) throws Exception
 	{
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			if(requestPayloadMap.containsKey("title"))
-			{
-				conditionMap.put("title_like", requestPayloadMap.get("title"));
-			}			
-			int pageSize = 0;
-			if(requestPayloadMap.containsKey("tRecInPage"))
-			{
-				
-				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-				conditionMap.put("pageEnd", pageSize);
-			}
-			if(requestPayloadMap.containsKey("tPageJump"))
-			{
-				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-				if (page == 0) 
-				{
-					page = 1;
-				}
-				conditionMap.put("pageStart", (page - 1) * pageSize);
-			}
-			
-		}
-		return this.baseGetList(null, TableNameEnum.PROJECTWORK.getName(),conditionMap);
+		return this.baseGetList(TableNameEnum.PROJECTWORK.getName(),this.getConditionMap(requestPayload));
 	}
 	
 	@RequestMapping(value="/work/listByUser",method=RequestMethod.POST)
-	public Object listByUser(@RequestBody String requestPayload) throws Exception
+	public Object listByUser(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception
 	{
-		return this.baseGetListByUser(TableNameEnum.PROJECTWORK.getName(), this.getConditionMap(requestPayload), this.getByUserMap());
+		return this.baseGetListByUser(TableNameEnum.PROJECTWORK.getName(), this.getConditionMap(requestPayload), this.getByUserMap(tokenId));
 	}
 	
 	@RequestMapping(value="/work/listByOrg",method=RequestMethod.POST)
-	public Object listByOrg(@RequestBody String requestPayload) throws Exception
+	public Object listByOrg(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception
 	{
-		return this.baseGetListByOrg(TableNameEnum.PROJECTWORK.getName(), this.getConditionMap(requestPayload), this.getByOrgMap());
+		return this.baseGetListByOrg(TableNameEnum.PROJECTWORK.getName(), this.getConditionMap(requestPayload), this.getByOrgMap(tokenId));
 	}
 	
 	
 	@RequestMapping(value="/work/add" , method=RequestMethod.POST)
-	public Object add(@RequestBody String requestPayload) throws Exception 
+	public Object add(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception 
 	{
 		if(null != requestPayload)
 		{
-			ProjectWork projectWork = (ProjectWork) requestAdd(requestPayload,ProjectWork.class,this.getAssociationTableJsonNode(),TypeEnum.WORK.getName());
+			ProjectWork projectWork = (ProjectWork) requestAdd(requestPayload,ProjectWork.class,this.getAssociationTableJsonNode(),TypeEnum.WORK.getName(),RedisUtil.getRedisUserInfo(tokenId));
 			return projectWork;
 		}
 		return null;
@@ -131,6 +108,7 @@ public class WorkController extends BaseController
 		if (requestPayloadMap.containsKey("id")) {
 			conditionMap.put("id", requestPayloadMap.get("id"));
 		}
+		conditionMap.put("deleted", false);
 		return baseValidate(TableNameEnum.PROJECTWORK.getName(),conditionMap);
 		
 	}
@@ -144,7 +122,8 @@ public class WorkController extends BaseController
 			if(requestPayloadMap.containsKey("title"))
 			{
 				conditionMap.put("title_like", requestPayloadMap.get("title"));
-			}			
+			}
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
@@ -166,18 +145,18 @@ public class WorkController extends BaseController
 		return conditionMap;
 	}
 	
-	private  Map<String,Object> getByUserMap()
+	private  Map<String,Object> getByUserMap(String tokenid)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("type", TypeEnum.WORK.getName());
-		map.put("username", "admin");
+		map.put("username", RedisUtil.getRedisUserInfo(tokenid).getUsername());
 		return map;
 	}
-	private  Map<String,Object> getByOrgMap()
+	private  Map<String,Object> getByOrgMap(String tokenid)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("type", TypeEnum.WORK.getName());
-		map.put("organization_id", "");
+		map.put("organization_id", RedisUtil.getRedisUserInfo(tokenid).getOrganization_id());
 		return map;
 	}
 	

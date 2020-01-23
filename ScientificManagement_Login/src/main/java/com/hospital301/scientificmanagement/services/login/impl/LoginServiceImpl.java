@@ -5,6 +5,9 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.apache.log4j.Logger;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,7 @@ import com.ccb.sm.entities.User;
 import com.hospital301.scientificmanagement.Redis.Redis;
 import com.hospital301.scientificmanagement.dao.login.Logindao;
 import com.hospital301.scientificmanagement.dao.login.Menudao;
+import com.hospital301.scientificmanagement.dao.scientificpayoffs.report.ReportMapper;
 import com.hospital301.scientificmanagement.services.BaseServiceImpl;
 import com.hospital301.scientificmanagement.services.login.LoginService;
 import com.hospital301.scientificmanagement.util.passwdUtil;
@@ -32,6 +36,8 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
 	private Logindao logindao;
 	@Autowired
 	private Menudao menudao;
+	@Autowired
+	private ReportMapper reportdao;
 	
 	@Resource
 	private Redis redis;
@@ -88,11 +94,16 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
 	/**
 	 * 根据用户权限返回菜单的json字符串
 	 */
-	public List<Menu> QuerUserMenu(List<String> userPermission) 
+	public Map<String,Object> QuerUserMenu(User user) 
 	{
-		List<Menu> listMenu = menudao.QueryMenuByUserPermission(userPermission);
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		List<String> userrole = new ArrayList<String>();
+		userrole = reportdao.getUserRole(user.getUsername());
+		List<Menu> listMenu = menudao.QueryMenuByUserPermission(userrole);
 		listMenu = TreeUtil.data(listMenu);
-		return listMenu;
+		resultMap.put("role", userrole);
+		resultMap.put("menu", listMenu);
+		return resultMap;
 	}
 	
  

@@ -64,6 +64,7 @@ public interface BaseMapper {
 	@DeleteProvider(method = "logicDeleteByMap",type=BaseFactory.class)
 	public Integer baseLogicDeleteByMap(String tableName, Map<String,Object> conditionMap);
 	
+	
 	/**
 	 * 逻辑删除数据
 	 * @param tableName

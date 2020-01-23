@@ -3,6 +3,7 @@ package com.hospital301.scientificmanagement.controller.organization;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.aspectj.weaver.AjAttribute.PrivilegedAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class OrganizationController
 			{
 				conditionMap.put("parent", requestPayloadMap.get("parent"));
 			}
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
@@ -74,7 +76,8 @@ public class OrganizationController
 			if(requestPayloadMap.containsKey("org_id"))
 			{
 				conditionMap.put("org_id", requestPayloadMap.get("org_id"));
-			}		
+			}
+			conditionMap.put("deleted", false);
 		}
 		return organizationService.updateParent("org_org_rel", conditionMap);
 	}
@@ -96,9 +99,9 @@ public class OrganizationController
 			if(requestPayloadMap.containsKey("org_id"))
 			{
 				conditionMap.put("org_id", requestPayloadMap.get("org_id"));
-			}		
+			}	
+			conditionMap.put("deleted", false);
 		}
 		return organizationService.get(conditionMap);
 	}
-	
 }

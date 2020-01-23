@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,7 @@ public class JsonUtil {
 	 * 获取json节点的值 (如果节点的值为数组则，则传入的class类型为数字类型 ： Class[].class ) 并将节点的值转换成指定对象
 	 * 
 	 * @param jsonStr
-	 * @param nodeName
+	 * @param nodeName 同时支持传入节点名称或者节点路径，节点路径格式为xxx.xxxx.xxx
 	 * @return Object 转换的对象
 	 * @throws IOException
 	 * @throws JsonProcessingException
@@ -76,27 +77,28 @@ public class JsonUtil {
 			throws JsonProcessingException, IOException {
 		ObjectMapper mapper = getMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		JsonNode jsonNode = mapper.readTree(jsonStr);
-		if ("keyword".equals(nodeName)) {
+		String[] nodearry = nodeName.split("\\.");
+		Object object = null;
+		if(nodearry.length==1)
+		{
 			JsonNode resultValue = jsonNode.findValue(nodeName);
 			if (null == resultValue)
 				return null;
-			if (resultValue.isArray()) {
-				List<String> keyword = new ArrayList<String>();
-				for (JsonNode objNode : resultValue) {
-					keyword.add(objNode.asText());
-//					System.out.println(objNode.asText());
-					return keyword;
-				}
+			object = JsonTOObject(resultValue.toString(), clazz);
+		}else
+		{
+			JsonNode resultValue = null;
+			for(String nodename : nodearry)
+			{
+				jsonNode = jsonNode.path(nodename);
+				System.out.println(jsonNode.toString());
 			}
-			return null;
+			if (null == jsonNode)
+				return null;
+			object = JsonTOObject(jsonNode.toString(), clazz);
 		}
-		JsonNode resultValue = jsonNode.findValue(nodeName);
-		if (null == resultValue)
-			return null;
-		Object object = JsonTOObject(resultValue.toString(), clazz);
 		return object;
 	}
 

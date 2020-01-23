@@ -71,7 +71,7 @@ public class TokenFilter implements Filter {
 				return;
 			}
 			redis.expireKey("token:"+tokenId, 60*30, TimeUnit.SECONDS);
-			servletRequest.setAttribute("user", redis.getUserInfo("token:"+tokenId));
+			servletRequest.setAttribute("user", redis.get("token:"+tokenId));
 		}
 		
 		chain.doFilter(servletRequest, servletResponse);

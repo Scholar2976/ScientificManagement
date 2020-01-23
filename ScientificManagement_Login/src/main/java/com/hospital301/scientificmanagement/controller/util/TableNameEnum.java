@@ -28,7 +28,10 @@ public enum TableNameEnum
 	PROJECTLABTECHNIQUE("project_lab_technique"),
 	PROJECTREGULATION("project_regulation"),
 	PROJECTRELATIONREL("project_relation_rel"),
-	MENU("menu");
+	MENU("menu"),
+	USER("user"),
+	ROLEUSERREL("role_user_rel"),
+	ROLE("role");
 	
 	private String name;
 	private TableNameEnum(String name)

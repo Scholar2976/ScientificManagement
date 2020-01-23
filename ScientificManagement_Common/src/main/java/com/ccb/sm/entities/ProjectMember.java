@@ -56,6 +56,7 @@ public class ProjectMember
 	private boolean deleted;   
 	//删除时间
 	private Date deleted_time;
+	
 	public ProjectMember() {
 		super();
 	}

@@ -14,6 +14,7 @@ F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospita
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\scientificpayoffs\paper\impl\PaperServiceimpl.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\scientificpayoffs\reward\RewardService.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\academyPost\academyPostController.java
+F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\project\CooperateController.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\config\ControllerAspect.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\BaseServieInterface.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\dao\user\UserDao.java
@@ -28,6 +29,7 @@ F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospita
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\login\loginController.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\util\DaoUtil.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\academy\academyController.java
+F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\Redis\Redis.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\dao\login\Logindao.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\project\impl\ProjectImpl.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\scientificpayoffs\work\WorkService.java
@@ -44,6 +46,7 @@ F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospita
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\scientificpayoffs\patent\PatentService.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\scientificpayoffs\software\impl\SoftwareServiceImpl.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\util\passwdUtil.java
+F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\config\RedisConfig.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\BaseController\BaseController.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\dao\parameter\ParameterDao.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\dao\academicPost\AcademyPostMapper.java
@@ -51,7 +54,9 @@ F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospita
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\user\UserService.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\scientificpayoffs\software\SoftwareController.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\scientificpayoffs\software\SoftwareService.java
+F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\Filter\TokenFilter.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\services\parameter\ParameterService.java
+F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\util\RedisUtil.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\util\TreeUtil.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\controller\util\ControllerUnit.java
 F:\CCB\ScientificManagement\ScientificManagement_Login\src\main\java\com\hospital301\scientificmanagement\dao\scientificpayoffs\member\ProjectMemberMapper.java

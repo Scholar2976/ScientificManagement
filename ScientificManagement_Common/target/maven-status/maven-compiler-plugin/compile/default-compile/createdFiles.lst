@@ -1,5 +1,6 @@
 com\ccb\sm\util\JsonUtil.class
 com\ccb\sm\entities\ProjectKeyword.class
+com\ccb\sm\entities\ProjectCooperation.class
 com\ccb\sm\entities\ProjectSoftware.class
 com\ccb\sm\baseDao\BaseMapper\BaseMapper.class
 com\ccb\sm\response\ResponseMessageObject.class

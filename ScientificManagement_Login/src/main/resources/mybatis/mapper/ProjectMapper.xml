@@ -45,7 +45,7 @@
 					#{fund2} and
 				</if>
 				<if test="fund1 != null and fund2 != null"> approved_fund between #{fund1} and #{fund2} and </if>
-				<if test="organization_id !=null"> m.organization_id=#{organization_id} and </if>
+				<if test="username !=null"> m.username=#{username} and </if>
 				m.type='project' and 
 				m.reference_id=p.id 
 			</trim>
@@ -69,7 +69,7 @@
 					#{fund2} and
 				</if>
 				<if test="fund1 != null and fund2 != null"> approved_fund between #{fund1} and #{fund2} and </if>
-				<if test="username !=null"> m.username=#{username} and </if>
+				<if test="organization_id !=null"> m.organization_id=#{organization_id} and </if>
 				m.type='project' and 
 				m.reference_id=p.id 
 			</trim>

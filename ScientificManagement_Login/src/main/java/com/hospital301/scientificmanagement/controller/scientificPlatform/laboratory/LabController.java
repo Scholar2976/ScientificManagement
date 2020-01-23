@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ccb.sm.entities.ProjectLab;
 import com.ccb.sm.util.JsonUtil;
 import com.ccb.sm.util.ParesJsonUtil;
+import com.hospital301.scientificmanagement.Redis.Redis;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
 import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.controller.util.TypeEnum;
 import com.hospital301.scientificmanagement.util.Util;
@@ -39,22 +42,18 @@ public class LabController extends BaseController
 			{
 				conditionMap.put("id", requestPayloadMap.get("id"));
 			}
-			List<String> list = new ArrayList<String>();
-			list.add("member");
-			list.add("equipment");
-			list.add("technique");
-			return this.requestGet(TableNameEnum.PROJECTLAB.getName(), conditionMap, list, TypeEnum.LAB.getName());
-//			return this.baseQueryById("project_lab",Integer.parseInt(requestPayloadMap.get("id").toString()));
+			conditionMap.put("deleted", false);
+			return this.requestGet(TableNameEnum.PROJECTLAB.getName(), conditionMap, this.getAssociationTableJsonNode(), TypeEnum.LAB.getName());
 		}
 		return null;
 	}
 	
 	@PostMapping(value = "/lab/add")
-	public Object add(@RequestBody String requestPayload) throws Exception {
+	public Object add(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception {
 		if(null != requestPayload)
 		{
 			
-			ProjectLab projectLab = (ProjectLab) requestAdd(requestPayload,ProjectLab.class,this.getAssociationTableJsonNode(),TypeEnum.LAB.getName());
+			ProjectLab projectLab = (ProjectLab) requestAdd(requestPayload,ProjectLab.class,this.getAssociationTableJsonNode(),TypeEnum.LAB.getName(),RedisUtil.getRedisUserInfo(tokenId));
 			return projectLab;
 		}
 		return null;
@@ -62,55 +61,18 @@ public class LabController extends BaseController
 
 	@PostMapping(value = "/lab/list")
 	public Object list(@RequestBody String requestPayload) throws Exception {
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			int pageSize = 0;
-//			if(requestPayloadMap.containsKey("title"))
-//			{
-//				conditionMap.put("title_like", requestPayloadMap.get("title"));
-//			}
-			if(requestPayloadMap.containsKey("tRecInPage"))
-			{
-				
-				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-				conditionMap.put("pageEnd", pageSize);
-			}
-			if(requestPayloadMap.containsKey("tPageJump"))
-			{
-				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-				if (page == 0) 
-				{
-					page = 1;
-				}
-				conditionMap.put("pageStart", (page - 1) * pageSize);
-			}
-			
-		}
-		return this.baseGetList(null, TableNameEnum.PROJECTLAB.getName(),conditionMap);
+		
+		return this.baseGetList(TableNameEnum.PROJECTLAB.getName(),this.getConditionMap(requestPayload));
 	}
 
 	@PostMapping(value = "/lab/listByUser")
-	public Object listByUser(@RequestBody String requestPayload) throws Exception {
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			conditionMap = this.getConditionMap(requestPayloadMap);
-		}
-		return this.baseGetListByUser(TableNameEnum.PROJECTLAB.getName(), conditionMap, this.getByUserMap());
+	public Object listByUser(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception {
+		return this.baseGetListByUser(TableNameEnum.PROJECTLAB.getName(), this.getConditionMap(requestPayload), this.getByUserMap(RedisUtil.getRedisUserInfo(tokenId).getUsername()));
 	}
 
 	@PostMapping(value = "/lab/listByOrg")
-	public Object listByOrg(@RequestBody String requestPayload) throws Exception {
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			conditionMap = this.getConditionMap(requestPayloadMap);
-		}
-		return this.baseGetListByOrg(TableNameEnum.PROJECTLAB.getName(), conditionMap, this.getByOrgMap());
+	public Object listByOrg(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception {
+		return this.baseGetListByOrg(TableNameEnum.PROJECTLAB.getName(), this.getConditionMap(requestPayload), this.getByOrgMap(RedisUtil.getRedisUserInfo(tokenId).getOrganization_id()));
 	}
 
 	
@@ -144,29 +106,31 @@ public class LabController extends BaseController
 
 	}
 	
-	private Map<String,Object> getConditionMap(Map<String,Object> requestPayloadMap)
+	private Map<String,Object> getConditionMap(String requestPayload)throws Exception
 	{
+		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
 		Map <String,Object> conditionMap = new HashMap<String,Object>();
-		int pageSize = 0;
-//		if(requestPayloadMap.containsKey("title"))
-//		{
-//			conditionMap.put("title_like", requestPayloadMap.get("title"));
-//		}
-		if(requestPayloadMap.containsKey("tRecInPage"))
+		if(null != requestPayloadMap && requestPayloadMap.size()>0)
 		{
-			
-			pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-			conditionMap.put("pageEnd", pageSize);
-		}
-		if(requestPayloadMap.containsKey("tPageJump"))
-		{
-			int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-			if (page == 0) 
+			conditionMap.put("deleted", false);
+			int pageSize = 0;
+			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
-				page = 1;
+				
+				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
+				conditionMap.put("pageEnd", pageSize);
 			}
-			conditionMap.put("pageStart", (page - 1) * pageSize);
+			if(requestPayloadMap.containsKey("tPageJump"))
+			{
+				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
+				if (page == 0) 
+				{
+					page = 1;
+				}
+				conditionMap.put("pageStart", (page - 1) * pageSize);
+			}
 		}
+		
 		return conditionMap;
 	}
 	private List<String> getAssociationTableJsonNode()
@@ -178,18 +142,18 @@ public class LabController extends BaseController
 		return list;
 	}
 	
-	private Map<String,Object> getByUserMap()
+	private Map<String,Object> getByUserMap(String uername)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("type", TypeEnum.LAB.getName());
-		map.put("username", "admin");
+		map.put("username", uername);
 		return map;
 	}
-	private Map<String,Object> getByOrgMap()
+	private Map<String,Object> getByOrgMap(String organization_id)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("type", TypeEnum.LAB.getName());
-		map.put("organization_id", "");
+		map.put("organization_id", organization_id);
 		return map;
 	}
 }

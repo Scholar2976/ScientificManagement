@@ -7,7 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Null;
+
 import org.apache.maven.shared.artifact.filter.StatisticsReportingArtifactFilter;
+import org.aspectj.apache.bcel.generic.ReturnaddressType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,7 +25,10 @@ import com.ccb.sm.entities.ProjectLabTechnique;
 import com.ccb.sm.entities.ProjectMember;
 import com.ccb.sm.entities.ProjectRelationRel;
 import com.ccb.sm.entities.ProjectUnit;
+import com.ccb.sm.entities.User;
 import com.ccb.sm.util.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonFormat.Feature;
+import com.hospital301.scientificmanagement.controller.user.userController;
 import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.dao.BaseMapper.FatherMapper;
 import com.hospital301.scientificmanagement.util.Util;
@@ -56,6 +62,8 @@ public class BaseServiceImpl implements BaseServieInterface {
 	public Integer logicDelete(String tableName,List<String> arrayList,String type, Integer id ) throws Exception {
 		// TODO Auto-generated method stub
 		Integer integer = fatherMapper.baseLogicDeleteById(tableName, id);
+		if(null == arrayList)
+			return integer;
 		for(String AssociationJsonNode : arrayList)
 		{
 			Map map = this.HandleDeletedAssociationTable(AssociationJsonNode, type, id);
@@ -118,7 +126,6 @@ public class BaseServiceImpl implements BaseServieInterface {
 	@Override
 	@Transactional(propagation=Propagation.NOT_SUPPORTED)
 	public List<Map<String, Object>> validate(String tableName, Map<String, Object> conditionMap) {
-		// TODO Auto-generated method stub
 		return fatherMapper.baseValidate(tableName, conditionMap);
 	}
 
@@ -146,11 +153,14 @@ public class BaseServiceImpl implements BaseServieInterface {
 	 * @throws Exception
 	 */
 	
-	public Object add(@RequestHeader("")String requestPayload, Class clazz, List<String> arrayList, String type) throws Exception {
+	public Object add(String requestPayload, Class clazz, List<String> arrayList, String type,User user) throws Exception {
 		List list = new ArrayList();
 		Object obj = null;
 		obj = JsonUtil.JsonNodeToObject(requestPayload, "txnBodyCom", clazz);
-		this.baseSaveOrUpdate(this.handleObj(obj));
+		boolean isUpdate = this.isNull(obj,"id");
+		this.baseSaveOrUpdate(this.setObjectDefault(obj,user));
+		if(null == arrayList)
+			return obj;
 		Integer id = new Integer(0);
 		Object object = this.getId(obj);
 		{
@@ -161,7 +171,11 @@ public class BaseServiceImpl implements BaseServieInterface {
 		}
 		// 处理关联表的插入
 		for (String AssociationName : arrayList) {
-			Object[] objects = this.HandleAddAssociationTableJson(AssociationName, requestPayload, type, id);
+			Map<String,Object> map = this.HandleDeletedAssociationTable(AssociationName, type, id);
+			String tableName = map.get("tablename").toString();
+			map.remove("tablename");
+			this.deleteByMap(tableName, map);
+			Object[] objects = this.HandleAddAssociationTableJson(AssociationName, requestPayload, type, id,user, isUpdate);
 			if (null != objects && objects.length > 0)
 				this.batchInsert(Util.asList(objects));
 		}
@@ -183,6 +197,9 @@ public class BaseServiceImpl implements BaseServieInterface {
 		if(null == listMap || listMap.size()==0 )
 			return null;
 		String mainJson = JsonUtil.getJsonResult(listMap.get(0));
+		
+		if(null == list)
+			return mainJson;
 		Integer id = (Integer) listMap.get(0).get("id");
 		for(String AssociationName : list)
 		{
@@ -190,6 +207,7 @@ public class BaseServiceImpl implements BaseServieInterface {
 			if(null != associationTableList && associationTableList.size()>0)
 			{
 				mainJson = JsonUtil.addJsonNode(mainJson, associationTableList, null, AssociationName);
+				
 			}
 		}
 		return mainJson;
@@ -205,65 +223,67 @@ public class BaseServiceImpl implements BaseServieInterface {
 	 * @throws Exception
 	 */
 	private Object[] HandleAddAssociationTableJson(String AssociationName, String requestPayload, String type,
-			Integer id) throws Exception {
+			Integer id,User user,boolean isUpdate) throws Exception {
 		switch (AssociationName) {
 
 		case "member":
 			ProjectMember[] projectMemberArray = (ProjectMember[]) JsonUtil.JsonNodeToObject(requestPayload, "member",
 					ProjectMember[].class);
-			return this.ObjectFieldAssignment(projectMemberArray, type,"member", id);
+			return this.ObjectFieldAssignment(projectMemberArray, type,"member", id,user , isUpdate);
 		case "chief_author":
 			ProjectMember[] projectMemberArray1 = (ProjectMember[]) JsonUtil.JsonNodeToObject(requestPayload,
 					"chief_author", ProjectMember[].class);
-			return this.ObjectFieldAssignment(projectMemberArray1, type, "chief_author", id);
+			return this.ObjectFieldAssignment(projectMemberArray1, type, "chief_author", id,user , isUpdate);
 		case "deputy_author":
 
 			ProjectMember[] projectMemberArray2 = (ProjectMember[]) JsonUtil.JsonNodeToObject(requestPayload,
 					"deputy_author", ProjectMember[].class);
-			return this.ObjectFieldAssignment(projectMemberArray2, type, "deputy_author", id);
+			return this.ObjectFieldAssignment(projectMemberArray2, type, "deputy_author", id ,user, isUpdate);
 		case "inventor":
 
 			ProjectMember[] projectMemberArray3 = (ProjectMember[]) JsonUtil.JsonNodeToObject(requestPayload,
 					"inventor", ProjectMember[].class);
-			return this.ObjectFieldAssignment(projectMemberArray3, type, "inventor", id);
+			return this.ObjectFieldAssignment(projectMemberArray3, type, "inventor", id ,user, isUpdate);
 		case "unit":
 
-			ProjectUnit[] projectUnitArray = (ProjectUnit[]) JsonUtil.JsonNodeToObject(requestPayload, "unit",
+			ProjectUnit[] projectUnitArray = (ProjectUnit[]) JsonUtil.JsonNodeToObject(requestPayload, "txnBodyCom.unit",
 					ProjectUnit[].class);
-			return this.ObjectFieldAssignment(projectUnitArray, type, null, id);
+			return this.ObjectFieldAssignment(projectUnitArray, type, null, id ,user, isUpdate);
 		case "keyword":
-			List<String> list = (List<String>) JsonUtil.JsonNodeToObject(requestPayload,"keyword", null);
-			if(null == list || list.size()==0)
-				return null;
-			ProjectKeyword[] projectkeywordArray = new ProjectKeyword[list.size()];
-			for(int i =0 ;i<list.size();i++)
-			{
-				ProjectKeyword projectKeyword = new ProjectKeyword();
-				projectKeyword.setKeyword(list.get(i));
-				projectkeywordArray[i]=projectKeyword;
-			}
-			return this.ObjectFieldAssignment(projectkeywordArray, type, null, id);
+			ProjectKeyword[] projectKeywords = (ProjectKeyword[]) JsonUtil.JsonNodeToObject(requestPayload,
+					"keyword", ProjectKeyword[].class);
+//			List<String> list = (List<String>) JsonUtil.JsonNodeToObject(requestPayload,"keyword", null);
+//			if(null == list || list.size()==0)
+//				return null;
+//			ProjectKeyword[] projectkeywordArray = new ProjectKeyword[list.size()];
+//			for(int i =0 ;i<list.size();i++)
+//			{
+//				ProjectKeyword projectKeyword = new ProjectKeyword();
+//				projectKeyword.setKeyword(list.get(i));
+//				projectkeywordArray[i]=projectKeyword;
+//			}
+			return this.ObjectFieldAssignment(projectKeywords, type, null, id ,user, isUpdate);
 		case "attachment":
 			ProjectAttachment[] projectAttachmentArray = (ProjectAttachment[]) JsonUtil.JsonNodeToObject(requestPayload,
 					"attachment", ProjectAttachment[].class);
-			return this.ObjectFieldAssignment(projectAttachmentArray, type, null, id);
+			return this.ObjectFieldAssignment(projectAttachmentArray, type, null, id ,user, isUpdate);
 		case "project":
 			ProjectRelationRel[] projectArray = (ProjectRelationRel[]) JsonUtil.JsonNodeToObject(requestPayload, "project", ProjectRelationRel[].class);
-			return this.ObjectFieldAssignment(projectArray, type, null, id);
+			return this.ObjectFieldAssignment(projectArray, type, null, id ,user, isUpdate);
 		case "equipment":
 			ProjectEquipment[] projectEquipmentArray = (ProjectEquipment[]) JsonUtil.JsonNodeToObject(requestPayload,
 					"equipment", ProjectEquipment[].class);
-			return this.ObjectFieldAssignment(projectEquipmentArray, null, null, id);
+			return this.ObjectFieldAssignment(projectEquipmentArray, null, null, id ,user, isUpdate);
 		case "technique":
 
 			ProjectLabTechnique[] projectLabTechniqueArray = (ProjectLabTechnique[]) JsonUtil
 					.JsonNodeToObject(requestPayload, "technique", ProjectLabTechnique[].class);
-			return this.ObjectFieldAssignment(projectLabTechniqueArray, null, null, id);
+			return this.ObjectFieldAssignment(projectLabTechniqueArray, null, null, id ,user, isUpdate);
 		case "fund":
 
 			ProjectFund[] projectFundArray = (ProjectFund[]) JsonUtil.JsonNodeToObject(requestPayload, "fund",
 					ProjectFund[].class);
-			return this.ObjectFieldAssignment(projectFundArray, null, null, id);
+			return this.ObjectFieldAssignment(projectFundArray, null, null, id ,user, isUpdate);
 		default:
 			return null;
 		}
@@ -409,16 +429,14 @@ public class BaseServiceImpl implements BaseServieInterface {
 		}
 	}
 
-	private Object[] ObjectFieldAssignment(Object[] objArray, String type, String subtype, Integer id) {
+	private Object[] ObjectFieldAssignment(Object[] objArray, String type, String subtype, Integer id,User user, boolean isUpdate) throws Exception
+	{
 		if(null == objArray || objArray.length==0)
 			return null;
 		for (int i = 0; i < objArray.length; i++) {
 			for (Field field : objArray[i].getClass().getDeclaredFields()) {
 				field.setAccessible(true);
 				try {
-					if ("id".equals(field.getName())) {
-						field.set(objArray[i], id);
-					}
 					if ("created_time".equals(field.getName())) {
 						field.set(objArray[i], new Date());
 					}
@@ -439,8 +457,7 @@ public class BaseServiceImpl implements BaseServieInterface {
 					}
 					if("deleted".equals(field.getName()))
 					{
-						Object deletedflag = field.get(objArray[i]);
-						if(null != deletedflag)
+						if(null == field.get(objArray[i]))
 						{
 							field.set(objArray[i], false);
 						}
@@ -457,6 +474,38 @@ public class BaseServiceImpl implements BaseServieInterface {
 							continue;
 						} else {
 							field.set(objArray[i], subtype);
+						}
+					}
+					
+					if(!isUpdate)
+					{
+						if ("modifier".equals(field.getName())) {
+							if(null == field.get(objArray[i]))
+							{
+								field.set(objArray[i],user.getUsername());
+							}
+						}
+						if ("modified_time".equals(field.getName())) {
+							if(null == field.get(objArray[i]))
+							{
+								field.set(objArray[i], new Date());
+							}
+							
+						}
+					}else
+					{
+						if ("creator".equals(field.getName())) {
+							if(null == field.get(objArray[i]))
+							{
+								field.set(objArray[i],user.getUsername());
+							}
+						}
+						if ("created_time".equals(field.getName())) {
+							if(null == field.get(objArray[i]))
+							{
+								field.set(objArray[i], new Date());
+							}
+							
 						}
 					}
 				} catch (Exception e) {
@@ -522,4 +571,50 @@ public class BaseServiceImpl implements BaseServieInterface {
 		}
 		return object;
 	}
+	
+	private Object FormtObject(Object obj,String fieldName,Object fieldValue) throws Exception
+	{
+		Field creator = obj.getClass().getDeclaredField(fieldName);
+		creator.setAccessible(true);
+		if(null == creator.get(obj))
+		{
+			creator.set(obj, fieldValue);
+		}
+		return obj;
+	}
+	
+	private Object setObjectDefault(Object object,User user) throws Exception
+	{
+		String username = "";
+		if(null != user)
+		{
+			username = user.getUsername();
+		}
+		Field field = object.getClass().getDeclaredField("id");
+		field.setAccessible(true);
+		if(null == field.get(object))
+		{
+			FormtObject(object,"creator",username);
+			FormtObject(object,"created_time",new Date());
+			FormtObject(object,"deleted",false);
+		}else
+		{
+			FormtObject(object,"modifier",username);
+			FormtObject(object,"modified_time",new Date());
+			FormtObject(object,"deleted",false);
+		}
+		return object;
+	}
+	
+	private boolean isNull(Object object ,String fieldName) throws Exception
+	{
+		Field field = object.getClass().getDeclaredField("id");
+		field.setAccessible(true);
+		if(null == field.get(object))
+		{
+			return true;
+		}
+		return false;
+	}
+	
 }

@@ -150,6 +150,15 @@ public class Redis
     	return redisTemplate.getExpire(key);
     }
 
+    /**
+     * 保存key
+     * @param key
+     * @param obj
+     */
+    public void setKey(String key,Object obj)
+    {
+    	valueOperations.set(key, obj);
+    }
 
     /**
      * 添加Redis字符串类型并设置超时时间
@@ -166,7 +175,7 @@ public class Redis
      * @param key
      * @return
      */
-    public Object getUserInfo(String key)
+    public Object get(String key)
     {
     	return valueOperations.get(key);
     }

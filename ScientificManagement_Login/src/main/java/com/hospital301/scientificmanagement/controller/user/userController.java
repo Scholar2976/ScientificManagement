@@ -1,5 +1,7 @@
 package com.hospital301.scientificmanagement.controller.user;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +19,8 @@ import com.ccb.sm.entities.User;
 import com.ccb.sm.response.ErrorResponseCommInfo;
 import com.ccb.sm.util.JsonUtil;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
+import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.services.user.UserService;
 import com.hospital301.scientificmanagement.util.Util;
 
@@ -52,6 +57,7 @@ public class userController extends BaseController
 			{
 				conditionMap.put("nickname_like", requestPayloadMap.get("nickname"));
 			}
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
@@ -70,7 +76,7 @@ public class userController extends BaseController
 			}
 			
 		}
-		return this.baseGetList(null, "user",conditionMap);
+		return this.baseGetList(TableNameEnum.USER.getName(),conditionMap);
 	}
 	
 
@@ -111,6 +117,7 @@ public class userController extends BaseController
 		}
 		ArrayList<String> tableNameList = new ArrayList<String>();
 		tableNameList.add("user");
+		
 		return this.baseValidate("user", conditionMap);
 	}
 	
@@ -138,8 +145,13 @@ public class userController extends BaseController
 	
 
 	@RequestMapping(value = "/user/get", method = RequestMethod.POST)
-	public Object get(@RequestBody String requestPayload)throws Exception 
+	public Object get(@RequestHeader(value = "C-Dynamic-Password-Foruser") String tokenid,@RequestBody String requestPayload)throws Exception 
 	{	
+		User user = RedisUtil.getRedisUserInfo(tokenid);
+		if(null != user)
+		{
+			return user;
+		}
 		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
 		Map<String, Object> conditionMap = new HashMap<String, Object>();
 		if(null != requestPayloadMap && requestPayloadMap.size()>0)
@@ -152,7 +164,7 @@ public class userController extends BaseController
 		List<Map<String, Object>> resultList = this.baseGet("user", conditionMap);
 		if(null != resultList && resultList.size()>0)
 		{
-			return resultList;
+			return resultList.get(0);
 		}
 		return new ErrorResponseCommInfo();
 	}

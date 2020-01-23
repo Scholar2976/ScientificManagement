@@ -1,5 +1,7 @@
 package com.hospital301.scientificmanagement.controller.login;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ import com.ccb.sm.response.SuccessResponseCommInfo;
 import com.ccb.sm.util.ParesJsonUtil;
 import com.hospital301.scientificmanagement.Redis.Redis;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
 import com.hospital301.scientificmanagement.menu.UserMenu;
 import com.hospital301.scientificmanagement.services.login.LoginService;
 
@@ -36,11 +39,8 @@ public class loginController extends BaseController
 	@Autowired
 	private Redis redis;
 
-	@Autowired
-	private HttpServletRequest httpServletRequest;
-
 	/**
-	 * 验证用户登录信息
+	 * 验证用户登录信息，并将用户信息存储到redis中
 	 * 
 	 * @param txnBodyCom
 	 *            前台登录相关信息json字符串
@@ -86,24 +86,18 @@ public class loginController extends BaseController
 	@RequestMapping(value = "/user/getUserInfo", method = RequestMethod.POST)
 	public Object returnUserInfo(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) 
 	{
-		
-		User user1 = (User) httpServletRequest.getAttribute("user");
-		List list  = new ArrayList();
-		User user = null;
-		String username ="";
-		Map map = ParesJsonUtil.JsonTOMap(requestPayload);
-		
-		if(map.containsKey("loginno"))
+		User user = RedisUtil.getRedisUserInfo(tokenId);
+		if(null == user)
 		{
-			username = map.get("loginno").toString().trim();
-			user = loginservice.GetUserByUserName(username);
-		}else
-		{
-			user = (User) redis.getUserInfo("token:"+tokenId);
+			Map map = ParesJsonUtil.JsonTOMap(requestPayload);	
+			if(map.containsKey("loginno"))
+			{
+				user = loginservice.GetUserByUserName(map.get("loginno").toString().trim());
+			}
 		}
-		list.add("user");
-		List menulist = loginservice.QuerUserMenu(list);
-		return getMenuMessObj(menulist);
+		Map<String ,Object> resultMap = loginservice.QuerUserMenu(user);
+		UserMenu userMenu = getMenuMessObj(resultMap,user);
+		return userMenu;
 	}
 
 	/**
@@ -111,17 +105,17 @@ public class loginController extends BaseController
 	 * @param menulist 
 	 * @return
 	 */
-	private UserMenu getMenuMessObj(List<Menu> menulist)
+	private UserMenu getMenuMessObj(Map<String,Object> map,User user)
 	{
 		List perlist = new ArrayList();
-		perlist.add("superuser");
+		perlist = (List) map.get("role");
 		perlist.add("user");
 		UserMenu usermenu = new UserMenu();
 		usermenu.setImage("ssdfs");
-		usermenu.setLoginNo("admin");
-		usermenu.setMenuTree(menulist);
+		usermenu.setLoginNo(user.getUsername());
+		usermenu.setMenuTree((List)map.get("menu"));
 		usermenu.setStaffid(6);
-		usermenu.setStaffName("admin");
+		usermenu.setStaffName(user.getNickname());
 		usermenu.setPermission(perlist);
 		return usermenu;
 	}

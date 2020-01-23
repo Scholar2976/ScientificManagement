@@ -7,12 +7,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.ccb.sm.entities.ProjectReward;
 import com.ccb.sm.util.ParesJsonUtil;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
 import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.controller.util.TypeEnum;
 import com.hospital301.scientificmanagement.services.scientificpayoffs.reward.RewardService;
@@ -30,67 +32,28 @@ public class RewardController extends BaseController
 	@RequestMapping(value = "/reward/list", method = RequestMethod.POST)
 	public Object getRewardList(@RequestBody String requestPayload) throws Exception
 	{
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			if(requestPayloadMap.containsKey("year"))
-			{
-				conditionMap.put("year", requestPayloadMap.get("year"));
-			}
-			if(requestPayloadMap.containsKey("type"))
-			{
-				conditionMap.put("type", requestPayloadMap.get("type"));
-			}
-			if(requestPayloadMap.containsKey("domain"))
-			{
-				conditionMap.put("domain", requestPayloadMap.get("domain"));
-			}
-			if(requestPayloadMap.containsKey("level"))
-			{
-				conditionMap.put("level", requestPayloadMap.get("level"));
-			}
-			
-			int pageSize = 0;
-			if(requestPayloadMap.containsKey("tRecInPage"))
-			{
-				
-				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-				conditionMap.put("pageEnd", pageSize);
-			}
-			if(requestPayloadMap.containsKey("tPageJump"))
-			{
-				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-				if (page == 0) 
-				{
-					page = 1;
-				}
-				conditionMap.put("pageStart", (page - 1) * pageSize);
-			}
-			
-		}
-		return this.baseGetList(null, TableNameEnum.PROJECTREWARD.getName(),conditionMap);
+		return this.baseGetList(TableNameEnum.PROJECTREWARD.getName(),this.getConditionMap(requestPayload));
 	}
 	
 	
 	@RequestMapping(value = "/reward/listByUser", method = RequestMethod.POST)
-	public Object listByUser(@RequestBody String requestPayload) throws Exception
+	public Object listByUser(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception
 	{
-		return this.baseGetListByUser(TableNameEnum.PROJECTREWARD.getName(), this.getConditionMap(requestPayload), this.getByUserMap());
+		return this.baseGetListByUser(TableNameEnum.PROJECTREWARD.getName(), this.getConditionMap(requestPayload), this.getByUserMap(tokenId));
 	}
 	
 	@RequestMapping(value = "/reward/listByOrg", method = RequestMethod.POST)
-	public Object listByOrg(@RequestBody String requestPayload) throws Exception
+	public Object listByOrg(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception
 	{
-		return this.baseGetListByOrg(TableNameEnum.PROJECTREWARD.getName(), this.getConditionMap(requestPayload), this.getByOrgMap());
+		return this.baseGetListByOrg(TableNameEnum.PROJECTREWARD.getName(), this.getConditionMap(requestPayload), this.getByOrgMap(tokenId));
 	}
 	
 	@RequestMapping(value = "/reward/add", method = RequestMethod.POST)
-	public Object add(@RequestBody String requestPayload)throws Exception 
+	public Object add(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload)throws Exception 
 	{	
 		if(null != requestPayload)
 		{
-			ProjectReward projectReward = (ProjectReward) requestAdd(requestPayload,ProjectReward.class,this.getAssociationTableJsonNode(),TypeEnum.REWARD.getName());
+			ProjectReward projectReward = (ProjectReward) requestAdd(requestPayload,ProjectReward.class,this.getAssociationTableJsonNode(),TypeEnum.REWARD.getName(),RedisUtil.getRedisUserInfo(tokenId));
 			return projectReward;
 		}
 		return null;
@@ -143,6 +106,7 @@ public class RewardController extends BaseController
 		if (requestPayloadMap.containsKey("id")) {
 			conditionMap.put("id", requestPayloadMap.get("id"));
 		}
+		conditionMap.put("deleted", false);
 		return baseValidate(TableNameEnum.PROJECTREWARD.getName(),conditionMap);
 		
 	}
@@ -169,7 +133,7 @@ public class RewardController extends BaseController
 			{
 				conditionMap.put("level", requestPayloadMap.get("level"));
 			}
-			
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
@@ -191,18 +155,18 @@ public class RewardController extends BaseController
 		return conditionMap;
 	}
 	
-	private  Map<String,Object> getByUserMap()
+	private  Map<String,Object> getByUserMap(String tokenid)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("type", TypeEnum.REWARD.getName());
-		map.put("username", "admin");
+		map.put("username", RedisUtil.getRedisUserInfo(tokenid).getUsername());
 		return map;
 	}
-	private  Map<String,Object> getByOrgMap()
+	private  Map<String,Object> getByOrgMap(String tokenid)
 	{
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("type", TypeEnum.REWARD.getName());
-		map.put("organization_id", "");
+		map.put("organization_id", RedisUtil.getRedisUserInfo(tokenid).getOrganization_id());
 		return map;
 	}
 	

@@ -31,7 +31,8 @@ spring:
     testWhileIdle: true
     filters: stat
    redis:
-        host: 192.168.234.131
+        host: 192.168.234.132
+ #       host: 127.0.0.1
         port: 6379
         password:
         jedis: 

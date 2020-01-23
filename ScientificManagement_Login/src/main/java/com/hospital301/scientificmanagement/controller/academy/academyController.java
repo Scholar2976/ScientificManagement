@@ -30,38 +30,8 @@ public class academyController extends BaseController
 	@RequestMapping(value="/academy/search",method=RequestMethod.POST)
 	public Object search(@RequestBody String requestPayload) throws Exception
 	{
-
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			if(requestPayloadMap.containsKey("name"))
-			{
-				conditionMap.put("name_like", requestPayloadMap.get("name"));
-			}
-			conditionMap.put("deleted", false);
-			int pageSize = 0;
-			if(requestPayloadMap.containsKey("tRecInPage"))
-			{
-				
-				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-				conditionMap.put("pageEnd", pageSize);
-			}
-			if(requestPayloadMap.containsKey("tPageJump"))
-			{
-				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-				if (page == 0) 
-				{
-					page = 1;
-				}
-				conditionMap.put("pageStart", (page - 1) * pageSize);
-			}
-			
-		}
-		List<Map<String, Object>> list = this.baseGet(TableNameEnum.PROJECTACADEMY.getName(),conditionMap);
+		List<Map<String, Object>> list = this.baseGet(TableNameEnum.PROJECTACADEMY.getName(),this.getConditionMap(requestPayload));
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		
-		
  		for(Map map : list)
  		{
  			Map<String,Object> m_map = new HashMap<>();
@@ -91,34 +61,7 @@ public class academyController extends BaseController
 	@RequestMapping(value="/academy/list",method=RequestMethod.POST)
 	public Object getList(@RequestBody String requestPayload) throws Exception
 	{
-		Map requestPayloadMap = (Map)Util.isNull(requestPayload, false, null);
-		Map<String, Object> conditionMap = new HashMap<String, Object>();
-		if(null != requestPayloadMap && requestPayloadMap.size()>0)
-		{
-			if(requestPayloadMap.containsKey("name"))
-			{
-				conditionMap.put("name_like", requestPayloadMap.get("name"));
-			}
-			int pageSize = 0;
-			if(requestPayloadMap.containsKey("tRecInPage"))
-			{
-				
-				pageSize = Integer.parseInt(requestPayloadMap.get("tRecInPage").toString());
-				conditionMap.put("pageEnd", pageSize);
-			}
-			if(requestPayloadMap.containsKey("tPageJump"))
-			{
-				int page = Integer.parseInt(requestPayloadMap.get("tPageJump").toString());
-				if (page == 0) 
-				{
-					page = 1;
-				}
-				conditionMap.put("pageStart", (page - 1) * pageSize);
-			}
-			
-		}
-
-		return this.baseGetList(null, TableNameEnum.PROJECTACADEMY.getName(),conditionMap);
+		return this.baseGetList(TableNameEnum.PROJECTACADEMY.getName(),this.getConditionMap(requestPayload));
 	}
 	
 
@@ -163,6 +106,7 @@ public class academyController extends BaseController
 			{
 				conditionMap.put("name_like", requestPayloadMap.get("name"));
 			}
+			conditionMap.put("deleted", false);
 			int pageSize = 0;
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import com.ccb.sm.entities.ProjectEquipment;
 import com.ccb.sm.util.JsonUtil;
 import com.ccb.sm.util.ParesJsonUtil;
 import com.hospital301.scientificmanagement.controller.BaseController.BaseController;
+import com.hospital301.scientificmanagement.controller.util.RedisUtil;
 import com.hospital301.scientificmanagement.controller.util.TableNameEnum;
 import com.hospital301.scientificmanagement.controller.util.TypeEnum;
 import com.hospital301.scientificmanagement.util.Util;
@@ -40,6 +42,7 @@ public class EquipmentController extends BaseController
 			{
 				conditionMap.put("id", requestPayloadMap.get("id"));
 			}
+			conditionMap.put("deleted", false);
 			List<String> list = new ArrayList<String>();
 			list.add("member");
 			return this.requestGet("project_equipment", conditionMap, list, TypeEnum.EQUIPMENT.getName());
@@ -49,12 +52,12 @@ public class EquipmentController extends BaseController
 	}
 	
 	@PostMapping(value = "/equipment/add")
-	public Object add(@RequestBody String requestPayload) throws Exception {
+	public Object add(@RequestHeader(value="C-Dynamic-Password-Foruser") String tokenId ,@RequestBody String requestPayload) throws Exception {
 		if(null != requestPayload)
 		{
 			List list = new ArrayList<String>();
 			list.add("member");
-			ProjectEquipment projectEquipment = (ProjectEquipment) requestAdd(requestPayload,ProjectEquipment.class,list,TypeEnum.EQUIPMENT.getName());
+			ProjectEquipment projectEquipment = (ProjectEquipment) requestAdd(requestPayload,ProjectEquipment.class,list,TypeEnum.EQUIPMENT.getName(),RedisUtil.getRedisUserInfo(tokenId));
 			return projectEquipment;
 		}
 		return null;
@@ -71,6 +74,7 @@ public class EquipmentController extends BaseController
 			{
 				conditionMap.put("name_like", requestPayloadMap.get("title"));
 			}
+			conditionMap.put("deleted", false);
 			if(requestPayloadMap.containsKey("tRecInPage"))
 			{
 				
@@ -88,7 +92,7 @@ public class EquipmentController extends BaseController
 			}
 			
 		}
-		return this.baseGetList(null, TableNameEnum.PROJECTEQUIPMENT.getName(),conditionMap);
+		return this.baseGetList(TableNameEnum.PROJECTEQUIPMENT.getName(),conditionMap);
 	}
 
 	@RequestMapping(value = "/equipment/remove", method = RequestMethod.POST)
@@ -99,7 +103,7 @@ public class EquipmentController extends BaseController
 			ProjectEquipment projectEquipment = (ProjectEquipment) JsonUtil.JsonNodeToObject(requestPayload,"txnBodyCom",ProjectEquipment.class);
 			if(null ==projectEquipment)
 				return "从json获取数据为空";
-//			this.basedelete(null,"project_equipment",projectEquipment.getId());
+			this.basedelete(TableNameEnum.PROJECTEQUIPMENT.getName(),null,TypeEnum.EQUIPMENT.getName(),projectEquipment.getId());
 			return projectEquipment;
 		}
 		return "接受前台数据为空";

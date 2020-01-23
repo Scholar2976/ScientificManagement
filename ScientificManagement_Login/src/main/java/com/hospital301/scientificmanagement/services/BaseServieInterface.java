@@ -3,6 +3,7 @@ package com.hospital301.scientificmanagement.services;
 import java.util.List;
 import java.util.Map;
 
+import com.ccb.sm.entities.User;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 
 public interface BaseServieInterface 
@@ -97,7 +98,7 @@ public interface BaseServieInterface
 	 * @return
 	 * @throws Exception
 	 */
-	public Object add(String requestPayload,Class clazz,List<String> arrayList,String type) throws Exception ;
+	public Object add(String requestPayload,Class clazz,List<String> arrayList,String type,User user) throws Exception ;
 	
 	/**
 	 * 查询主表和关联表信息

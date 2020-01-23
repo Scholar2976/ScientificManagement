@@ -30,10 +30,8 @@ public class BaseController
 	 * @param conditionMap 数据库查询条件
 	 * @return
 	 */
-	public Object baseGetList(BaseServieInterface service,String tableName,Map<String,Object> conditionMap)
+	public Object baseGetList(String tableName,Map<String,Object> conditionMap)
 	{
-		setService(service);
-		conditionMap.put("deleted", false);
 		Map ResultMap = baseServieInterface.QueryTableInfoByPage(tableName,conditionMap);
 		Map countmap = new HashMap();
 		countmap.put("totalRec", ResultMap.get("total"));
@@ -72,10 +70,8 @@ public class BaseController
 	 * @param clazz 数据库中插入的实体类
 	 * @return
 	 */
-	public Object baseAdd(BaseServieInterface service,Object object) throws Exception
+	public Object baseAdd(Object object) throws Exception
 	{
-		setService(service);
-//		Object objEntity = ParesJsonUtil.jsonToObj(clazz, txnBodyCom);
 		Object result =  baseServieInterface.insert(object);
 		return result;
 			
@@ -115,6 +111,11 @@ public class BaseController
 		return "数据不存在";
 		
 	}
+	
+	public Object baseDeletedByMap(String tableName, Map<String,Object> conditionMap)throws Exception
+	{
+		return baseServieInterface.deleteByMap(tableName, conditionMap);
+	}
 
 	/**
 	 * 跟新或者插入
@@ -144,7 +145,6 @@ public class BaseController
 	
 	public String  baseValidate(String tableName,Map<String,Object> conditionMap)
 	{
-		conditionMap.put("deleted", false);
 		List<Map<String,Object>> list = baseServieInterface.validate(tableName, conditionMap);
 		if(list.size()>0)
 		{
@@ -171,9 +171,9 @@ public class BaseController
 	}
 	
 	
-	public Object requestAdd(String requestPayload,Class clazz,List<String> arrayList,String type) throws Exception
+	public Object requestAdd(String requestPayload,Class clazz,List<String> arrayList,String type,User user) throws Exception
 	{
-		return this.baseServieInterface.add(requestPayload, clazz,arrayList,type);
+		return this.baseServieInterface.add(requestPayload, clazz,arrayList,type,user);
 	}
 	
 	/**
@@ -219,8 +219,10 @@ public class BaseController
 		return null;
 	}
 	
-	
-	
+	public Object QueryTableInfo(String tableName,Map<String,Object> map)
+	{
+		return this.baseServieInterface.QueryTableInfo(tableName, map);
+	}
 	
 	
 	private void setService(Object service)
